@@ -1,3 +1,4 @@
+```
 TRABAJO-INTEGRADOR-EPH/
 ├── data/                       
 │   ├── clean/               
@@ -40,5 +41,5 @@ TRABAJO-INTEGRADOR-EPH/
 │   └── Python - Trabojo integrador parte 1.pdf
 │
 ├── .gitignore               
-├── README.md                    
-
+├── README.md
+```
