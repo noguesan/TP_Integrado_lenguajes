@@ -5,7 +5,7 @@ def unir_lineas(f,processed):
     for lines in f: 
         processed.write(lines)
 
-def unir_archivos_individuos (tipo): 
+def unir_archivos (tipo): 
     new_tipo = str(tipo) + "*"
     new_tipo_csv = str(tipo) + ".csv"
     encabezado = False
