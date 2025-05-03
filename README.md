@@ -24,6 +24,8 @@ TRABAJO-INTEGRADOR-EPH/
 │   ├── procesamientos/          
 │   │   ├── phogares.py
 │   │   └── pindividuos.py
+│   ├── streamlit 
+│   │   └── main.py
 │   ├── utils/                 
 │   │   ├── constantes.py
 │   │   └── funciones.py
