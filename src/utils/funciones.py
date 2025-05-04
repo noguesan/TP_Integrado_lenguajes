@@ -74,6 +74,7 @@ def universitario (new_fila,fila):
     
 #Funciones para procesar la información de hogares
 
+# IX_TOT: Cantidad de miembros del hogar (Columna 65)
 def TIPO_HOGAR (new_fila,fila): 
     if fila[65] == "1":
         new_fila.append("Unipersonal")
@@ -82,20 +83,45 @@ def TIPO_HOGAR (new_fila,fila):
     else:
         new_fila.append("Extendido")
 
+# IV4: Tipo de vivienda. (Columna 48)
 def MATERIAL_TECHUMBRE (new_fila,fila): 
-    if fila[3] == "5" or fila[3] == "6" or fila[3] == "7":
+    if fila[15] in [5,6,7]:
         new_fila.append("Material precario")
-    elif fila[3] in ["1","2","3","4"]:
+    elif fila[15] in [1,2,3,4]:
         new_fila.append("Material durable")
-    elif fila[3] == "9":
+    else:
         new_fila.append("No aplica")
+    
 
+# IV2: ¿Cuántos ambientes/habitaciones tiene la vivienda en total? (Columna 12) 
+# IX _Tot: Cantidad de miembros del hogar (Columna 65)
 def DENSIDAD_HOGAR (new_fila,fila): 
-    if fila[4] < "1":
+
+    if fila[12] > fila[65]:
         new_fila.append("Bajo")
-    elif fila[4] in ["1","2"]:
+    elif fila[12] == fila[65] or fila[12] == fila[65] + 1:
         new_fila.append("Medio")
-    elif fila[4] > "2":
+    elif fila[12] < fila[65]:
         new_fila.append("Alto")
 
-def CONDICION_DE_HABITABILIDAD (new_fila,fila): 
+# Explicacion y sus respectivas columnas:
+# IV6: tiene agua. (Columna 17)
+# IV8: posee baño. (Columna 20)
+# IV9: ubicación del baño. (Columna 21)
+# IV11: desagüe del baño. (Columna 23)
+# IV3: material de pisos interiores. (Columna 13)
+
+def CONDICION_DE_HABITABILIDAD(new_fila, fila):
+    # Reglas para clasificar como "insuficiente"
+    if fila[17] == "3" or fila[20] == "2" or fila[21] == "3" or fila[23] == "4":
+        new_fila.append("insuficiente")
+    # Reglas para clasificar como "regular"
+    elif fila[17] == "1" and fila[20] == "1" and fila[21] == "1" and fila[23] in ["1", "2"]:
+        new_fila.append("regular")
+    # Reglas para clasificar como "saludables"
+    elif fila[17] == "1" and fila[20] == "1" and fila[21] == "1" and fila[23] == "1" and fila[13] in ["1", "2", "3"]:
+        new_fila.append("saludables")
+    # Reglas para clasificar como "buena"
+    elif fila[17] == "1" and fila[20] == "1" and fila[21] == "1" and fila[23] == "1" and fila[13] == "1":
+        new_fila.append("buena")
+
