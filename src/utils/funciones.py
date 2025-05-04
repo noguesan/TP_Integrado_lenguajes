@@ -1,6 +1,8 @@
 from glob import glob 
 from src.utils.constantes import DATA_PROCESSED_PATH, DATA_RAW_PATH
 
+# Funciones para unir archivos de datos y procesar la información (hogares y personas)
+
 def unir_lineas(f,processed):
     for lines in f: 
         processed.write(lines)
@@ -23,6 +25,8 @@ def unir_archivos (tipo):
                         else: 
                             next(f) 
                             unir_lineas(f,processed)
+
+#Funciones para procesar la información de individuos
 
 def ch04_str (new_fila,fila):  
     if fila[11] == "1": 
@@ -68,3 +72,30 @@ def universitario (new_fila,fila):
         else: 
             new_fila.append("0")
     
+#Funciones para procesar la información de hogares
+
+def TIPO_HOGAR (new_fila,fila): 
+    if fila[65] == "1":
+        new_fila.append("Unipersonal")
+    elif fila[65] in ["2","3","4"]:
+        new_fila.append("Nuclear")
+    else:
+        new_fila.append("Extendido")
+
+def MATERIAL_TECHUMBRE (new_fila,fila): 
+    if fila[3] == "5" or fila[3] == "6" or fila[3] == "7":
+        new_fila.append("Material precario")
+    elif fila[3] in ["1","2","3","4"]:
+        new_fila.append("Material durable")
+    elif fila[3] == "9":
+        new_fila.append("No aplica")
+
+def DENSIDAD_HOGAR (new_fila,fila): 
+    if fila[4] < "1":
+        new_fila.append("Bajo")
+    elif fila[4] in ["1","2"]:
+        new_fila.append("Medio")
+    elif fila[4] > "2":
+        new_fila.append("Alto")
+
+def CONDICION_DE_HABITABILIDAD (new_fila,fila): 
