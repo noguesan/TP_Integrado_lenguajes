@@ -1,11 +1,13 @@
 import streamlit as st
+import os
+import re
 
 # Configuración básica de la app
 st.set_page_config(page_title="EPH App", layout="centered")
 
 # Sidebar con las páginas
 st.sidebar.title("Menú")
-pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos"])
+pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos", "Busqueda", "Visualizacion"])
 
 # Página 1 - Inicio
 if pagina == "Inicio":
@@ -20,4 +22,5 @@ if pagina == "Inicio":
 
     En esta app vamos a poder explorar esa información una vez que carguemos los datos.
     """)
-
+  
+        
