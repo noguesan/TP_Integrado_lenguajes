@@ -1,8 +1,6 @@
 from glob import glob 
 from src.utils.constantes import DATA_PROCESSED_PATH, DATA_RAW_PATH
 
-# Funciones para unir archivos de datos y procesar la información (hogares y personas)
-
 def unir_lineas(f,processed):
     for lines in f: 
         processed.write(lines)
@@ -25,8 +23,6 @@ def unir_archivos (tipo):
                         else: 
                             next(f) 
                             unir_lineas(f,processed)
-
-#Funciones para procesar la información de individuos
 
 def ch04_str (new_fila,fila):  
     if fila[11] == "1": 

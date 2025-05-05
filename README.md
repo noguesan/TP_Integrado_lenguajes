@@ -1,4 +1,21 @@
-TRABAJO-INTEGRADOR-EPH/
+# TRABAJO-INTEGRADOR-EPH/
+Desarrollo de una aplicación de búsqueda y visualización de información relacionada a la Encuesta Permanente de Hogares (EPH).
+
+## Instalación de Dependencias
+
+## Estructura del Proyecto
+```
+├── data/                       
+│   ├── clean/               
+│   │   ├── usu_hogar_modificado_T324.csv  
+│   │   └── usu_individual_modificado_T324.csv
+│   ├── processed/              
+│   │   ├── usu_hogar.csv
+│   │   └── usu_individual.csv
+│   └── raw/                 
+│       ├── usu_hogar_T324.txt
+│       └── usu_individual_T324.txt
+│
 ├── data/                      # datos
 │   ├── raw/                   # Datos originales descargados de la EPH sin procesar.
 │   ├── processed/             # Unifica los archivos 
@@ -37,3 +54,5 @@ TRABAJO-INTEGRADOR-EPH/
 ├── README.md                  # Descipcion contenido del proyecto.
 ├── Licencia                   # CREAR
 ├── Requerimientos             # CREAR
+## Estructura del Proyecto
+```
