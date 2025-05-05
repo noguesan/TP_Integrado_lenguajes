@@ -71,37 +71,38 @@ def universitario (new_fila,fila):
             new_fila.append("1")
         else: 
             new_fila.append("0")
-    
+
 #Funciones para procesar la información de hogares
 
-# IX_TOT: Cantidad de miembros del hogar (Columna 65)
+# IX_TOT: Cantidad de miembros del hogar (Columna 64)
 def TIPO_HOGAR (new_fila,fila): 
-    if fila[65] == "1":
+    personas = int(fila[64])
+    if personas == 1:
         new_fila.append("Unipersonal")
-    elif fila[65] in ["2","3","4"]:
+    elif personas == 2 or personas == 3 or personas == 4: 
         new_fila.append("Nuclear")
     else:
-        new_fila.append("Extendido")
+        new_fila.append(f"Extendido")
+    
 
-# IV4: Tipo de vivienda. (Columna 48)
+# IV4: Tipo de vivienda. (Columna 47)
 def MATERIAL_TECHUMBRE (new_fila,fila): 
-    if fila[15] in [5,6,7]:
+    if fila[47] == 5 or fila[15] == 6 or fila[15] == 7:
         new_fila.append("Material precario")
-    elif fila[15] in [1,2,3,4]:
+    elif fila[47] in [1,2,3,4]:
         new_fila.append("Material durable")
     else:
         new_fila.append("No aplica")
     
 
 # IV2: ¿Cuántos ambientes/habitaciones tiene la vivienda en total? (Columna 12) 
-# IX _Tot: Cantidad de miembros del hogar (Columna 65)
+# IX _Tot: Cantidad de miembros del hogar (Columna 64)
 def DENSIDAD_HOGAR (new_fila,fila): 
-
-    if fila[12] > fila[65]:
+    if fila[12] > fila[64]:
         new_fila.append("Bajo")
-    elif fila[12] == fila[65] or fila[12] == fila[65] + 1:
+    elif fila[12] == fila[64] or fila[12] == fila[65]:
         new_fila.append("Medio")
-    elif fila[12] < fila[65]:
+    elif fila[12] < fila[64]:
         new_fila.append("Alto")
 
 # Explicacion y sus respectivas columnas:
