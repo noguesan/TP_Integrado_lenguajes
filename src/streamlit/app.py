@@ -26,21 +26,26 @@ elif pagina == "Carga de datos":
     st.title("Carga de datos")
 
     ruta_archivo = "usu_clean_individual.csv"
-
-    def cargar_datos():
-        return pd.read_csv(ruta_archivo)
+    df = None
     
+    def cargar_datos():
+     return pd.read_csv(ruta_archivo)
+    
+try:
     if st.button("Actualizar Dataset"):
         df = cargar_datos()
         st.success("Datos actualizados correctamente.")
     else:
         df = cargar_datos()
 
-if "ANO4" in df.columns and "TRIMESTRE" in df.columns:
-    min_anio = df["ANO4"].min()
-    max_anio = df["ANO4"].max()
-    min_trim = df[df["ANO4"] == min_anio]["TRIMESTRE"].min()
-    max_trim = df[df["ANO4"] == max_anio]["TRIMESTRE"].max()
-    st.info(f"El sistema contiene informacion desde el {min_trim:02d}/{min_anio} hasta el {max_trim:02d}/{max_anio}.")
-else:
-    st.warning("No se encontraron columnas de año y trimestre en el dataset.")
+    if "ANO4" in df.columns and "TRIMESTRE" in df.columns:
+        min_anio = df["ANO4"].min()
+        max_anio = df["ANO4"].max()
+        min_trim = df[df["ANO4"] == min_anio]["TRIMESTRE"].min()
+        max_trim = df[df["ANO4"] == max_anio]["TRIMESTRE"].max()
+        st.info(f"El sistema contiene informacion desde el {min_trim:02d}/{min_anio} hasta el {max_trim:02d}/{max_anio}.")
+    else:
+        st.warning("No se encontraron columnas de año y trimestre en el dataset.")
+except FileNotFoundError:
+    st.error("El archivo no se encontro, verifica que el archivo este en la carpeta correcta.")
+df = pd.DataFrame()
