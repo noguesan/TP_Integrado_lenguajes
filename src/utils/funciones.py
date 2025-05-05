@@ -46,7 +46,7 @@ def nivel_ed (new_fila,fila):
 
 def condicion_laboral (new_fila,fila):
     if fila[27] == "1":
-        if fila[28] == 1 or fila[28] == 2 : 
+        if fila[28] == "1" or fila[28] == "2" : 
             new_fila.append("ocupado autonomo")
         else:
             for i in ["3","4","9"]:
