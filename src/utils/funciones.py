@@ -87,9 +87,10 @@ def TIPO_HOGAR (new_fila,fila):
 
 # IV4: Tipo de vivienda. (Columna 47)
 def MATERIAL_TECHUMBRE (new_fila,fila): 
-    if fila[47] == 5 or fila[15] == 6 or fila[15] == 7:
+    material = int(fila[47])
+    if material in [5,6,7]:
         new_fila.append("Material precario")
-    elif fila[47] in [1,2,3,4]:
+    elif material in [1,2,3,4]:
         new_fila.append("Material durable")
     else:
         new_fila.append("No aplica")
