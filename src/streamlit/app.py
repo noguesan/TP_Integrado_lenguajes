@@ -1,10 +1,9 @@
 import streamlit as st
 import csv
-import os
 
 st.set_page_config(page_title="Explorador EPH", layout="centered")
 st.sidebar.title("Menú")
-pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos", "Busqueda"])
+pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos"])
 
 ruta_archivo = "data/clean/usu_clean_individual.csv"
 
@@ -16,6 +15,7 @@ def cargar_datos_csv():
     except:
         st.error(" No se pudo cargar el archivo.")
     return datos
+
 
 if pagina == "Inicio":
     st.title(" Explorador de Datos EPH")
