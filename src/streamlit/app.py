@@ -7,7 +7,7 @@ st.set_page_config(page_title="EPH App", layout="centered")
 # Sidebar con las páginas
 st.sidebar.title("Menú")
 pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos", "Busqueda", "Visualizacion"])
-ruta_archivo = "usu_clean_individual.csv"
+ruta_archivo = "data/clean/usu_clean_individual.csv"
 
 def cargar_datos():
     try:
