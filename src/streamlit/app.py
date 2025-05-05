@@ -1,6 +1,5 @@
 import streamlit as st
-import os
-import re
+import pandas as pd
 
 # Configuración básica de la app
 st.set_page_config(page_title="EPH App", layout="centered")
@@ -23,4 +22,25 @@ if pagina == "Inicio":
     En esta app vamos a poder explorar esa información una vez que carguemos los datos.
     """)
   
-        
+elif pagina == "Carga de datos":
+    st.title("Carga de datos")
+
+    ruta_archivo = "usu_clean_individual.csv"
+
+    def cargar_datos():
+        return pd.read_csv(ruta_archivo)
+    
+    if st.button("Actualizar Dataset"):
+        df = cargar_datos()
+        st.success("Datos actualizados correctamente.")
+    else:
+        df = cargar_datos()
+
+if "ANO4" in df.columns and "TRIMESTRE" in df.columns:
+    min_anio = df["ANO4"].min()
+    max_anio = df["ANO4"].max()
+    min_trim = df[df["ANO4"] == min_anio]["TRIMESTRE"].min()
+    max_trim = df[df["ANO4"] == max_anio]["TRIMESTRE"].max()
+    st.info(f"El sistema contiene informacion desde el {min_trim:02d}/{min_anio} hasta el {max_trim:02d}/{max_anio}.")
+else:
+    st.warning("No se encontraron columnas de año y trimestre en el dataset.")
