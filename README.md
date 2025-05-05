@@ -2,7 +2,7 @@
 TRABAJO-INTEGRADOR-EPH/
 ├── data/                       
 │   ├── clean/               
-│   │   ├── usu_hogar_modificado_T324.csv 
+│   │   ├── usu_hogar_modificado_T324.csv  
 │   │   └── usu_individual_modificado_T324.csv
 │   ├── processed/              
 │   │   ├── usu_hogar.csv
