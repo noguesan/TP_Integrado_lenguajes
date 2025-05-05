@@ -68,25 +68,14 @@ def universitario (new_fila,fila):
         else: 
             new_fila.append("0")
 
-<<<<<<< HEAD
-def algo (x):
-    return x + 2 
-=======
 #Funciones para procesar la información de hogares
->>>>>>> 6e9893284635d9ddba710bc22eb5d30136b9920f
 
 # IX_TOT: Cantidad de miembros del hogar (Columna 64)
 def TIPO_HOGAR (new_fila,fila): 
-<<<<<<< HEAD
-    if fila[64] == "1":
-        new_fila.append("Unipersonal")
-    elif fila[64] in ["2","3","4"]:
-=======
     personas = int(fila[64])
     if personas == 1:
         new_fila.append("Unipersonal")
     elif personas == 2 or personas == 3 or personas == 4: 
->>>>>>> 6e9893284635d9ddba710bc22eb5d30136b9920f
         new_fila.append("Nuclear")
     else:
         new_fila.append(f"Extendido")
@@ -109,10 +98,6 @@ def DENSIDAD_HOGAR (new_fila,fila):
         new_fila.append("Bajo")
     elif fila[12] == fila[64] or fila[12] == fila[65]:
         new_fila.append("Medio")
-<<<<<<< HEAD
-    elif fila[4] > "2":
-        new_fila.append("Alto")
-=======
     elif fila[12] < fila[64]:
         new_fila.append("Alto")
 
@@ -137,4 +122,3 @@ def CONDICION_DE_HABITABILIDAD(new_fila, fila):
     elif fila[17] == "1" and fila[20] == "1" and fila[21] == "1" and fila[23] == "1" and fila[13] == "1":
         new_fila.append("buena")
 
->>>>>>> 6e9893284635d9ddba710bc22eb5d30136b9920f
