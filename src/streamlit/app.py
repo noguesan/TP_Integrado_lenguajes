@@ -1,55 +1,63 @@
 import streamlit as st
-import pandas as pd
+import csv
+import os
 
-# Configuración básica de la app
-st.set_page_config(page_title="EPH App", layout="centered")
-
-# Sidebar con las páginas
+st.set_page_config(page_title="Explorador EPH", layout="centered")
 st.sidebar.title("Menú")
-pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos", "Busqueda", "Visualizacion"])
+pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos", "Busqueda"])
+
 ruta_archivo = "data/clean/usu_clean_individual.csv"
 
-def cargar_datos():
+def cargar_datos_csv():
+    datos = []
     try:
-        return pd.read_csv(ruta_archivo)
-    except FileNotFoundError:
-        st.error("El archivo no se encontró. Verifica que esté en la carpeta correcta.")
-        return pd.DataFrame()
-    except pd.errors.EmptyDataError:
-        st.error("El archivo está vacío o tiene un formato incorrecto.")
-        return pd.DataFrame()
+        with open("data/clean/usu_clean_individual.csv", "r", encoding="utf-8") as archivo:
+            datos = list(csv.DictReader(archivo))
+    except:
+        st.error(" No se pudo cargar el archivo.")
+    return datos
 
-# Página 1 (Inicio))
 if pagina == "Inicio":
-    st.title("Explorador de la Encuesta Permanente de Hogares (EPH)")
+    st.title(" Explorador de Datos EPH")
 
     st.markdown("""
-    Bienvenidos a esta aplicación para visualizar datos de la **EPH**.
+    Bienvenido a esta aplicación interactiva para explorar los datos de la **Encuesta Permanente de Hogares (EPH)**.
 
-    La Encuesta Permanente de Hogares (EPH) es una encuesta del INDEC que recopila datos sobre:
-    - Las condiciones de vida de la población.
-    - Características de los hogares y de las personas: edad, educación, ingresos, empleo, etc.
+    La EPH es una encuesta realizada por el INDEC que contiene información sobre:
+    - Condiciones de vida.
+    - Situación laboral.
+    - Ingresos, educación, edad y otras características sociodemográficas.
 
-    En esta app vamos a poder explorar esa información una vez que carguemos los datos.
+    ---
+    ### ¿Cómo usar esta aplicación?
+    1. Ingresá a la sección **"Carga de datos"** para conocer el rango de información disponible.
+    2. Si incorporaste nuevos archivos, presioná **"Actualizar Dataset"** para refrescar la base.
     """)
-# Página 2 (Carga)
-elif pagina == "Carga de datos":
-    st.title("Carga de datos")
-    try:
-        if st.button("Actualizar Dataset"):
-            df = cargar_datos()
-            if not df.empty:
-                st.success("Datos actualizados correctamente.")
-        else:
-            df = cargar_datos()
 
-        if not df.empty and "ANO4" in df.columns and "TRIMESTRE" in df.columns:
-            min_anio = df["ANO4"].min()
-            max_anio = df["ANO4"].max()
-            min_trim = df[df["ANO4"] == min_anio]["TRIMESTRE"].min()
-            max_trim = df[df["ANO4"] == max_anio]["TRIMESTRE"].max()
-            st.info(f"El sistema contiene información desde el {min_trim:02d}/{min_anio} hasta el {max_trim:02d}/{max_anio}.")
-        elif not df.empty:
-            st.warning("No se encontraron columnas de año y trimestre en el dataset.")
-    except Exception as e:
-        st.error(f"Ocurrió un error inesperado: {e}")
+
+elif pagina == "Carga de datos":
+    st.title(" Carga de Datos de EPH")
+
+    if st.button(" Actualizar Dataset"):
+        datos = cargar_datos_csv()
+        if datos:
+            st.success(" Datos actualizados correctamente.")
+    else:
+        datos = cargar_datos_csv()
+
+    if datos:
+        try:
+            anios = [int(fila["ANO4"]) for fila in datos if fila.get("ANO4")]
+            trimestres = [int(fila["TRIMESTRE"]) for fila in datos if fila.get("TRIMESTRE")]
+
+            anio_min = min(anios)
+            anio_max = max(anios)
+
+            trim_min = min([int(fila["TRIMESTRE"]) for fila in datos if int(fila["ANO4"]) == anio_min])
+            trim_max = max([int(fila["TRIMESTRE"]) for fila in datos if int(fila["ANO4"]) == anio_max])
+
+            st.info(f" El sistema contiene información desde el {trim_min:02d}/{anio_min} hasta el {trim_max:02d}/{anio_max}.")
+        except Exception as e:
+            st.error(f" No se pudo analizar el contenido del archivo: {e}")
+    else:
+        st.warning(" No se encontraron datos o el archivo está vacío.")
