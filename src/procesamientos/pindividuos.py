@@ -1,10 +1,10 @@
-<<<<<<< HEAD
 import sys 
-sys.path.append("..")
-from src.utils.funciones import unir_archivos
-from src.utils.funciones import ch04_str, nivel_ed, condicion_laboral, universitario 
-from src.utils.constantes import DATA_CLEAN_PATH, DATA_PROCESSED_PATH
 import csv 
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+from src.utils.funciones import unir_archivos
+from src.utils.constantes import DATA_CLEAN_PATH, DATA_PROCESSED_PATH
+
 
 def actualizar_clean_individuos():
 
@@ -34,9 +34,7 @@ def actualizar_clean_individuos():
 def actualizar_individuos():
     unir_archivos("usu_individual")
     actualizar_clean_individuos()
-def actualizar_hogares():
-    unir_archivos("usu_hogar")
-=======
+
 def ch04_str (new_fila,fila):  
     if fila[11] == "1": 
         new_fila.append("masculino")
@@ -79,4 +77,3 @@ def universitario (new_fila,fila):
             new_fila.append("1")
         else: 
             new_fila.append("0")
->>>>>>> 2cf3c2c70bb72165a324c9bbc1bbbf8c82802058
