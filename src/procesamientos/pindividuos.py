@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import sys 
 sys.path.append("..")
 from src.utils.funciones import unir_archivos
@@ -35,3 +36,47 @@ def actualizar_individuos():
     actualizar_clean_individuos()
 def actualizar_hogares():
     unir_archivos("usu_hogar")
+=======
+def ch04_str (new_fila,fila):  
+    if fila[11] == "1": 
+        new_fila.append("masculino")
+    else: 
+        new_fila.append("femenino")
+
+def nivel_ed (new_fila,fila):
+    if fila[26] == "1": 
+        new_fila.append("primario incompleto")
+    elif fila[26] == "2": 
+        new_fila.append("primario completo")
+    elif fila[26] == "3": 
+        new_fila.append("secundario incompleto")
+    elif fila[26] == "4": 
+        new_fila.append("secundario completo")
+    elif fila[26] == "5" or fila[26] == "6": 
+        new_fila.append("superior o universitario")
+    else:
+        new_fila.append("sin informacion")
+
+def condicion_laboral (new_fila,fila):
+    if fila[27] == "1":
+        if fila[28] == "1" or fila[28] == "2" : 
+            new_fila.append("ocupado autonomo")
+        elif fila[28] == "3" or fila[28] == "4" or fila[28] == "9" : 
+            new_fila.append("ocupado dependiente")
+           
+    elif fila[27] == "2": 
+        new_fila.append("desocupado")
+    elif fila[27] == "3": 
+        new_fila.append("inactivo")
+    else: 
+        new_fila.append("fuera de categoria")
+    
+def universitario (new_fila,fila): 
+    if fila[13] < "18":
+        new_fila.append("2")
+    else: 
+        if fila[26] == "5" or fila[26] == "6":
+            new_fila.append("1")
+        else: 
+            new_fila.append("0")
+>>>>>>> 2cf3c2c70bb72165a324c9bbc1bbbf8c82802058
