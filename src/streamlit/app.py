@@ -1,21 +1,12 @@
 import streamlit as st
-import csv
+import sys 
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+from src.procesamientos.pindividuos import actualizar_individuos
 
 st.set_page_config(page_title="Explorador EPH", layout="centered")
 st.sidebar.title("Menú")
-pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos"])
-
-ruta_archivo = "data/clean/usu_clean_individual.csv"
-
-def cargar_datos_csv():
-    datos = []
-    try:
-        with open("data/clean/usu_clean_individual.csv", "r", encoding="utf-8") as archivo:
-            datos = list(csv.DictReader(archivo))
-    except:
-        st.error(" No se pudo cargar el archivo.")
-    return datos
-
+pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos", "Buscar", "Visualizacion"])
 
 if pagina == "Inicio":
     st.title(" Explorador de Datos EPH")
@@ -33,17 +24,15 @@ if pagina == "Inicio":
     1. Ingresá a la sección **"Carga de datos"** para conocer el rango de información disponible.
     2. Si incorporaste nuevos archivos, presioná **"Actualizar Dataset"** para refrescar la base.
     """)
-
-
 elif pagina == "Carga de datos":
     st.title(" Carga de Datos de EPH")
 
     if st.button(" Actualizar Dataset"):
-        datos = cargar_datos_csv()
+        datos = actualizar_individuos()  # Llamar a la función correctamente
         if datos:
             st.success(" Datos actualizados correctamente.")
     else:
-        datos = cargar_datos_csv()
+        datos = actualizar_individuos()  # Llamar a la función correctamente
 
     if datos:
         try:
