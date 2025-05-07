@@ -1,3 +1,41 @@
+import sys 
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+from src.utils.funciones import unir_archivos
+from src.utils.constantes import DATA_CLEAN_PATH, DATA_PROCESSED_PATH
+import csv 
+
+
+def actualizar_clean_hogar():
+
+    archivo_clean = DATA_CLEAN_PATH / "usu_clean_hogar.csv"
+    archivo_processed = DATA_PROCESSED_PATH / "usu_hogar.csv"
+
+    def new_fila (fila):
+        new_fila = fila
+        TIPO_HOGAR(new_fila,fila)
+        MATERIAL_TECHUMBRE(new_fila,fila)
+        DENSIDAD_HOGAR(new_fila,fila)
+        CONDICION_DE_HABITABILIDAD(new_fila,fila)
+        return new_fila
+
+    with archivo_clean.open("w",newline="", encoding="utf-8") as f:
+        with archivo_processed.open("r",encoding="utf-8") as p:
+            lector = csv.reader(p,delimiter=";")
+            encabezado = next(lector) + ["TIPO_HOGAR", "MATERIAL_TECHUMBRE","DENSIDAD_HOGAR","CONDICION_DE_HABITABILIDAD"]
+            escritor = csv.writer(f)
+            escritor.writerow(encabezado)
+            for fila in lector:
+                new_fila_1 = new_fila(fila) 
+                escritor.writerow(new_fila_1)        
+
+def actualizar_hogar():
+    unir_archivos("usu_hogar")
+    actualizar_clean_hogar()
+    
+
+
+
 #Funciones para procesar la información de hogares
 
 def TIPO_HOGAR (new_fila,fila): 
@@ -56,3 +94,6 @@ def CONDICION_DE_HABITABILIDAD(new_fila, fila):
             new_fila.append("regular")
     else:
         new_fila.append("insuficiente")
+
+    
+    
