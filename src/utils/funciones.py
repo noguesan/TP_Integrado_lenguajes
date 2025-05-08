@@ -26,3 +26,4 @@ def unir_archivos (tipo):
 
 def porcentaje(valor,total):
     return (valor / total) * 100
+
