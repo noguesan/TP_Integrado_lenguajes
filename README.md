@@ -1,8 +1,27 @@
 
 # TRABAJO-INTEGRADOR-EPH/
-Desarrollo de una aplicación de búsqueda y visualización de información relacionada a la Encuesta Permanente de Hogares (EPH).
+Encuest.AR es una aplicación que facilita el acceso y análisis de los datos recolectados por la Encuesta Permanente de Hogares (EPH), un programa nacional realizado por el INDEC para conocer las características socioeconómicas de la población argentina. Permite visualizar y explorar información procesada de los datos crudos de la EPH, facilitando el análisis de las tendencias y características socioeconómicas de la población en distintas áreas como educación, ocupación y vivienda.
+
+## Integrantes del grupo
+Nogueira Santiago
+Caselli Felipe
+Benavidez GRegorio
+Martins Thiago
+
+## Uso de la aplicacion
+Para iniciar la aplicación se debe ejecutar streamlit run streamlit/Inicio.py
+
+interfaz de la aplicacion:
+P1: Inicio: Contiene información general sobre la EPH y la aplicación.
+P2: Carga de Datos: Muestra los datasets disponibles (actualmente con datos de 2023 y 2024). Puedes hacer clic en un botón para actualizar los datasets.
+P3: Búsqueda por Tema: Aquí puedes explorar diferentes temas de la EPH, aunque esta sección está en desarrollo.
+P4: Visualización: Presenta diferentes visualizaciones de los datos.
 
 ## Instalación de Dependencias
+python 3.12.9
+streamlit
+otras librerias (sys, os, csv, src)
+
 
 ## Estructura del Proyecto
 ```

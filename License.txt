@@ -1,0 +1,13 @@
+TRABAJO-INTEGRADOR-EPH/
+Encuest.AR es una aplicación que facilita el acceso y análisis de los datos recolectados por la Encuesta Permanente de Hogares (EPH), un programa nacional realizado por el INDEC para conocer las características socioeconómicas de la población argentina. Permite visualizar y explorar información procesada de los datos crudos de la EPH, facilitando el análisis de las tendencias y características socioeconómicas de la población en distintas áreas como educación, ocupación y vivienda.
+
+Integrantes del grupo
+Nogueira Santiago
+Caselli Felipe
+Benavidez GRegorio
+Martins Thiago
+
+Instalación de Dependencias
+python 3.12.9
+streamlit
+otras librerias (sys, os, csv, src)
