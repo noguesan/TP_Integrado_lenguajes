@@ -1,11 +1,21 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from glob import glob 
-import sys 
-sys.path.append("..")
-from constantes import DATA_CLEAN_PATH, DATA_RAW_PATH, DATA_PROCESSED_PATH
+
 import csv 
+from pathlib import Path 
+
+# Define la ruta base de la carpeta "data", que está ubicada tres niveles arriba del archivo actual.
+DATA_PATH = Path(__file__).parent.parent.parent / "data" 
+
+# Ruta para los datos limpios.
+DATA_CLEAN_PATH = DATA_PATH / "clean"
+
+# Ruta para los datos procesados.
+DATA_PROCESSED_PATH = DATA_PATH / "processed"
+
+# Ruta para los datos crudos.
+DATA_RAW_PATH = DATA_PATH / "raw"
 # Función que escribe todas las líneas de un archivo en otro archivo.
 def unir_lineas(f, processed):
     for lines in f: 
