@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from glob import glob 
 from src.utils.constantes import DATA_PROCESSED_PATH, DATA_RAW_PATH
 

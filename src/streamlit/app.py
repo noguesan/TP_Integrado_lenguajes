@@ -11,6 +11,27 @@ def actualizar_todo():
     actualizar_individuos()
     return True
 
+def cargar_datos_csv(path):
+    try:
+        with open(path, mode="r", encoding="utf-8") as archivo:
+            lector = csv.DictReader(archivo)
+            return [fila for fila in lector]
+    except Exception as e:
+        st.error(f"No se pudo cargar el archivo {os.path.basename(path)}: {e}")
+        return None
+
+def mostrar_tiempo(datos, nombre_archivo):
+    try:
+        anios = [int(f["ANO4"]) for f in datos if f.get("ANO4")]
+        anio_min = min(anios)
+        anio_max = max(anios)
+
+        trim_min = min(int(f["TRIMESTRE"]) for f in datos if int(f["ANO4"]) == anio_min)
+        trim_max = max(int(f["TRIMESTRE"]) for f in datos if int(f["ANO4"]) == anio_max)
+
+        st.info(f" Datos del archivo **{nombre_archivo}** desde {trim_min:02d}/{anio_min} hasta {trim_max:02d}/{anio_max}.")
+    except Exception as e:
+        st.error(f"No se pudo analizar los datos del archivo {nombre_archivo}: {e}")
 
 st.set_page_config(page_title="Explorador EPH", layout="centered")
 st.sidebar.title("Menú")
@@ -39,54 +60,17 @@ elif pagina == "Carga de datos":
         datos = actualizar_todo()  
         if datos:
             st.success(" Datos actualizados correctamente.")
-    
-    datos_ind = None
-    datos_hog = None
 
-    try:
-        with open("data/clean/usu_clean_individual.csv", mode="r", encoding="utf-8") as archivo_ind:
-            lector_ind = csv.DictReader(archivo_ind)
-            datos_ind = [fila for fila in lector_ind]
-    except Exception as e:
-        st.error(f"No se pudo cargar el archivo de individuos: {e}")
 
-    try:
-        with open("data/clean/usu_clean_hogar.csv", mode="r", encoding="utf-8") as archivo_hog:
-            lector_hog = csv.DictReader(archivo_hog)
-            datos_hog = [fila for fila in lector_hog]
-    except Exception as e:
-        st.error(f"No se pudo cargar el archivo de hogares: {e}")
+    datos_ind = cargar_datos_csv("data/clean/usu_clean_individual.csv")
+    datos_hog = cargar_datos_csv("data/clean/usu_clean_hogar.csv")
     
-    
-    # Procesar datos si existen
     if datos_ind:
-        try:
-            anios = [int(f["ANO4"]) for f in datos_ind if f.get("ANO4")]
-            trimestres = [int(f["TRIMESTRE"]) for f in datos_ind if f.get("TRIMESTRE")]
-
-            anio_min = min(anios)
-            anio_max = max(anios)
-            trim_min = min([int(f["TRIMESTRE"]) for f in datos_ind if int(f["ANO4"]) == anio_min])
-            trim_max = max([int(f["TRIMESTRE"]) for f in datos_ind if int(f["ANO4"]) == anio_max])
-
-            st.info(f" Datos de individuos desde {trim_min:02d}/{anio_min} hasta {trim_max:02d}/{anio_max}.")
-        except Exception as e:
-            st.error(f"No se pudo analizar los datos de individuos: {e}")
+        mostrar_tiempo(datos_ind, "individuos")
     else:
-        st.warning(" No se encontraron datos de individuos o el archivo está vacío.")
+        st.warning("No se encontraron datos de individuos o el archivo está vacío.")
 
     if datos_hog:
-        try:
-            anios = [int(f["ANO4"]) for f in datos_hog if f.get("ANO4")]
-            trimestres = [int(f["TRIMESTRE"]) for f in datos_hog if f.get("TRIMESTRE")]
-
-            anio_min = min(anios)
-            anio_max = max(anios)
-            trim_min = min([int(f["TRIMESTRE"]) for f in datos_hog if int(f["ANO4"]) == anio_min])
-            trim_max = max([int(f["TRIMESTRE"]) for f in datos_hog if int(f["ANO4"]) == anio_max])
-
-            st.info(f" Datos de hogares desde {trim_min:02d}/{anio_min} hasta {trim_max:02d}/{anio_max}.")
-        except Exception as e:
-            st.error(f"No se pudo analizar los datos de hogares: {e}")
+        mostrar_tiempo(datos_hog, "hogares")
     else:
-        st.warning(" No se encontraron datos de hogares o el archivo está vacío.")
+        st.warning("No se encontraron datos de hogares o el archivo está vacío.")
