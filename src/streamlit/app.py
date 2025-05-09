@@ -2,10 +2,15 @@ import streamlit as st
 import sys 
 import os
 import csv
+
+# Agregar la ruta al sistema para importar módulos personalizados
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
+# Importar funciones para actualizar datos de individuos y hogares
 from src.procesamientos.pindividuos import actualizar_individuos
 from src.procesamientos.phogares import actualizar_hogar
 
+# Función para actualizar todos los datos
 def actualizar_todo():
     actualizar_hogar()
     actualizar_individuos()
@@ -34,12 +39,16 @@ def mostrar_tiempo(datos, nombre_archivo):
         st.error(f"No se pudo analizar los datos del archivo {nombre_archivo}: {e}")
 
 st.set_page_config(page_title="Explorador EPH", layout="centered")
+
+# Crear un menú lateral con opciones de navegación
 st.sidebar.title("Menú")
 pagina = st.sidebar.radio("Elegí una sección:", ["Inicio", "Carga de datos", "Buscar", "Visualizacion"])
 
+# Sección "Inicio" de la aplicación
 if pagina == "Inicio":
     st.title(" Explorador de Datos EPH")
 
+    # Descripción introductoria de la aplicación
     st.markdown("""
     Bienvenido a esta aplicación interactiva para explorar los datos de la **Encuesta Permanente de Hogares (EPH)**.
 
@@ -53,11 +62,14 @@ if pagina == "Inicio":
     1. Ingresá a la sección **"Carga de datos"** para conocer el rango de información disponible.
     2. Si incorporaste nuevos archivos, presioná **"Actualizar Dataset"** para refrescar la base.
     """)
-elif pagina == "Carga de datos":
-    st.title(" Carga de Datos de EPH")
 
+# Sección "Carga de datos" de la aplicación
+elif pagina == "Carga de datos":
+    st.title(" Carga de Datos de EPH")  # Título principal de la sección
+
+    # Botón para actualizar el dataset
     if st.button(" Actualizar Dataset"):
-        datos = actualizar_todo()  
+        datos = actualizar_todo()  # Llama a la función para actualizar los datos
         if datos:
             st.success(" Datos actualizados correctamente.")
 
@@ -70,6 +82,7 @@ elif pagina == "Carga de datos":
     else:
         st.warning("No se encontraron datos de individuos o el archivo está vacío.")
 
+    # Procesar datos de hogares si existen
     if datos_hog:
         mostrar_tiempo(datos_hog, "hogares")
     else:
