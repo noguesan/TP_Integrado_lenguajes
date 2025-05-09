@@ -24,14 +24,12 @@ def unir_lineas(f, processed):
     return min
 
 # Función que combina múltiples archivos de un tipo específico en un único archivo CSV.
-# Parámetro:
-# - tipo: el prefijo o patrón de los archivos que se desean combinar.
 def unir_archivos(tipo): 
     # Define el patrón de búsqueda para los archivos y el nombre del archivo combinado.
     new_tipo = str(tipo) + "*"
     new_tipo_csv = str(tipo) + ".csv"
-    encabezado = False  # Variable para controlar si ya se escribió el encabezado.
-    archivo_processed = DATA_PROCESSED_PATH / new_tipo_csv  # Ruta del archivo combinado.
+    encabezado = False  
+    archivo_processed = DATA_PROCESSED_PATH / new_tipo_csv  
 
     existe_min = False
     
@@ -58,11 +56,6 @@ def unir_archivos(tipo):
                             unir_lineas(f, processed)
 
 # Función que calcula el porcentaje de un valor respecto a un total.
-# Parámetros:
-# - valor: el valor parcial.
-# - total: el valor total.
-# Retorna:
-# - El porcentaje que representa el valor respecto al total.
 def porcentaje(valor, total):
     return (valor / total) * 100
 
