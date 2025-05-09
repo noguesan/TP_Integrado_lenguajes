@@ -17,20 +17,19 @@ Desarrollo de una aplicación de búsqueda y visualización de información rela
 │       ├── usu_hogar_T324.txt
 │       └── usu_individual_T324.txt
 │
-├── data/                      # datos
-│   ├── raw/                   # Datos originales descargados de la EPH sin procesar.
-│   ├── processed/             # Unifica los archivos 
-│   └── clean/                 # Datos procesados, con las nuevas columnas 
+├── streamlit
+│   ├── Inicio.py
+│   └── Pages
+│       ├──Busqueda por tema.py
+│       ├──Carga de datos.py
+│       └── visualización.py
 │
 ├── notebooks/                 # Notebooks de Jupyter utilizados para análisis exploratorio, procesamiento y visualización.
-│   ├── main_hogares.ipynb     # Análisis centrado en la base de hogares._agregar las columnas 
-│   ├── main_individuos.ipynb  # Análisis centrado en la base de individuos._ agregar las columnas
-│   ├── Sección_B.ipynb        # Desarrollo parte B. BORRAR
-│   └── Sección_B_v2.ipynb     # Desarrollo parte B.
+│   ├── mainA_hogares.ipynb     # Análisis centrado en la base de hogares._agregar las columnas 
+│   ├── mainA_individuos.ipynb  # Análisis centrado en la base de individuos._ agregar las columnas
+│   └── Main_B.ipynb     # Desarrollo parte B.
 │
 ├── src/                       # Módulos de código fuente
-│   ├── streamlit/             # COMPLETAR
-│   │   └── app.py             # COMPLETAR
 │   ├── procesamientos/        # Scripts de procesamiento y transformación de datos.
 │   │   ├── phogares.py        # Procesamiento específico de la base de hogares.
 │   │   ├── pindividuos.py     # Procesamiento específico de la base de individuos.
@@ -41,16 +40,12 @@ Desarrollo de una aplicación de búsqueda y visualización de información rela
 │   │   └── __init__.py        # Hace que src sea un paquete de Python.
 │   └── __init__.py            # Hace que src sea un paquete de Python.
 │
-├── test/                      # Archivos de prueba utilizados para validar funciones y transformaciones.  # BORRAR
-│   ├── usu_hogar_modificado_T324.csv
-│   └── usu_individual_modificado_T324.csv
 │
 ├── z_otros/                   # Documentación y recursos adicionales de contexto.
 │   ├── EPH_registro_3T2024_DisenoTablas.pdf       # Descripción del contenido de las tablas
 │   └── Python - Trabajo integrador parte 1.pdf    # Consigna del trabajo
 │
 ├── .gitignore                 # Especifica archivos y carpetas que Git debe ignorar.
-├── README.md                  # Descipcion contenido del proyecto.
-├── Licencia                   # CREAR
-├── Requerimientos             # CREAR
+└── README.md                  # Descipcion contenido del proyecto.
+
 ```
