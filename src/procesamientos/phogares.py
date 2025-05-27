@@ -93,7 +93,7 @@ def CONDICION_DE_HABITABILIDAD(new_fila, fila):
     material_pisos = fila[12]  # IV3: Material de los pisos
 
     # Clasificar la condición de habitabilidad
-    if tiene_agua in ["1", "2"]:  
+    if tiene_agua in ["1"]:  
         if tiene_bano == "1" and material_pisos in ["1", "2"]:  
             if ubicacion_bano == "1" and material_pisos == "1" and desague_bano == "1":
                 new_fila.append("buena") 

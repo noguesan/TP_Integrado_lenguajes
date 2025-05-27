@@ -1,0 +1,6 @@
+
+Instalacion de Dependencias
+python 3.12.9
+streamlit
+otras librerias (sys, os, csv, src)
+
