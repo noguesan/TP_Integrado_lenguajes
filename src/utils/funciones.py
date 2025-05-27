@@ -1,18 +1,9 @@
 from glob import glob 
 from pathlib import Path 
 import csv
+from .constantes import DATA_PROCESSED_PATH, DATA_RAW_PATH , DATA_CLEAN_PATH
 
 # Define la ruta base de la carpeta "data", que está ubicada tres niveles arriba del archivo actual.
-DATA_PATH = Path(__file__).parent.parent.parent / "data" 
-
-# Ruta para los datos limpios.
-DATA_CLEAN_PATH = DATA_PATH / "clean"
-
-# Ruta para los datos procesados.
-DATA_PROCESSED_PATH = DATA_PATH / "processed"
-
-# Ruta para los datos crudos.
-DATA_RAW_PATH = DATA_PATH / "raw"
 # Función que escribe todas las líneas de un archivo en otro archivo.
 
 def unir_lineas(f, processed):
@@ -54,42 +45,9 @@ def unir_archivos(tipo):
                             unir_lineas(f, processed)
 
 # Función que calcula el porcentaje de un valor respecto a un total.
+
 def porcentaje(valor, total):
     return (valor / total) * 100
-
-def separar_por_trimestre(dict_anios): 
-    dict_final = {}
-    for anio in dict_anios:
-        dict_temporal = {}
-        
-        for filas in dict_anios[anio]:
-            trimestre = filas[2]
-            if trimestre not in dict_temporal: 
-                dict_temporal[trimestre] = []
-            dict_temporal[trimestre].append(filas)
-
-        dict_final[anio] = dict_temporal
-    return dict_final
-
-
-def agrupar_por_anio_y_trimestre(filas, col_anio=1):
-    grupos = {}
-    for fila in filas:
-        anio = fila[col_anio]
-        if anio not in grupos:
-            grupos[anio] = []
-        grupos[anio].append(fila)
-    grupos_final = separar_por_trimestre(grupos)
-    return grupos_final
-
-def obtener_fechas (dict_trimestres): 
-    max_anio = max(dict_trimestres.keys())
-    max_trimestre = max(dict_trimestres[max_anio].keys())
-    
-    min_anio = min(dict_trimestres.keys())
-    min_trimestre = min(dict_trimestres[min_anio].keys())
-
-    return (max_anio,max_trimestre), (min_anio,min_trimestre)
 
 # Funciones de la Sección B
 
