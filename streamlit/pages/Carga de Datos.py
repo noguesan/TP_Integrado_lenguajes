@@ -7,34 +7,28 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from src.procesamientos.pindividuos import actualizar_individuos
 from src.procesamientos.phogares import actualizar_hogar
 from src.utils.funciones import  agrupar_por_anio_y_trimestre, obtener_fechas
-from src.utils.constantes import DATA_CLEAN_PATH
+from src.utils.constantes import DATA_CLEAN_PATH, DATA_RAW_PATH
 
 
 def actualizar_todo(): 
     actualizar_hogar()
     actualizar_individuos()
-    return True
-
 
 
 def mostrar_tiempo ():
     archivo_clean_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
 
     archivo_individuos = archivo_clean_path.open("r",encoding="utf-8") 
-    reader = csv.reader(archivo_individuos,delimiter=";")
-    header = next(reader)
+    reader = csv.reader(archivo_individuos,delimiter=",")
 
-    new_list_i = []
+    lista_filas_individual = list(reader)
 
-    for elem in reader:
-        new_elem = elem[0].split(',')
-        new_list_i.append(new_elem)
-
-    lista_filas_individual = new_list_i[:]
     anios_tri_individuos = agrupar_por_anio_y_trimestre(lista_filas_individual)
     mas_nuevo, mas_viejo = obtener_fechas(anios_tri_individuos)
 
     return mas_nuevo, mas_viejo
+
+
 
 
 
@@ -56,3 +50,5 @@ if st.button(" Actualizar Dataset"):
 
 
 st.subheader(f' {mas_viejo_anio:02d}/{mas_viejo_tri} hasta {mas_nuevo_anio:02d}/{mas_nuevo_tri}')
+
+
