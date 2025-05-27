@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 
 from src.procesamientos.pindividuos import actualizar_individuos
 from src.procesamientos.phogares import actualizar_hogar
-from src.utils.funciones import  agrupar_por_anio_y_trimestre, obtener_fechas
+from src.utils.funciones import  agrupar_por_anio_y_trimestre,obtener_fechas
 from src.utils.constantes import DATA_CLEAN_PATH
 
 
