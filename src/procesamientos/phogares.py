@@ -10,14 +10,26 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from src.utils.funciones import unir_archivos  
 from src.utils.constantes import DATA_CLEAN_PATH, DATA_PROCESSED_PATH  
 
-# Función para procesar y limpiar los datos de hogares
 def actualizar_clean_hogar():
+    """
+    Procesa y limpia los datos de hogares, agregando columnas derivadas como tipo de hogar,
+    material de techumbre, densidad del hogar y condición de habitabilidad.
+    Guarda el resultado en un nuevo archivo CSV limpio.
+    """
     # Definir las rutas de los archivos de entrada y salida
     archivo_clean = DATA_CLEAN_PATH / "usu_clean_hogar.csv"  
     archivo_processed = DATA_PROCESSED_PATH / "usu_hogar.csv"  
 
-    # Función interna para transformar una fila
     def new_fila(fila):
+        """
+        Transforma una fila agregando las nuevas columnas procesadas.
+
+        Args:
+            fila (list): Fila original del archivo CSV.
+
+        Returns:
+            list: Fila original con las nuevas columnas agregadas.
+        """
         new_fila = fila  # Copiar la fila original
         TIPO_HOGAR(new_fila, fila)  # Agregar columna de tipo de hogar
         MATERIAL_TECHUMBRE(new_fila, fila)  # Agregar columna de material de techumbre
@@ -38,13 +50,22 @@ def actualizar_clean_hogar():
                 new_fila_1 = new_fila(fila)  
                 escritor.writerow(new_fila_1)  
 
-# Función principal para actualizar los datos de hogares
 def actualizar_hogar():
+    """
+    Ejecuta el proceso completo de actualización de los datos de hogares,
+    uniendo archivos y limpiando los datos.
+    """
     unir_archivos("usu_hogar")  
     actualizar_clean_hogar() 
 
-# Función para clasificar el tipo de hogar según el número de personas
 def TIPO_HOGAR(new_fila, fila): 
+    """
+    Clasifica el tipo de hogar según el número de personas.
+
+    Args:
+        new_fila (list): Fila a modificar.
+        fila (list): Fila original del archivo CSV.
+    """
     personas = int(fila[64])  # IX_TOT: Número total de personas en el hogar
     if personas == 1:
         new_fila.append("Unipersonal")  
@@ -53,8 +74,14 @@ def TIPO_HOGAR(new_fila, fila):
     else:
         new_fila.append("Extendido")  
 
-# Función para clasificar el material de la techumbre
 def MATERIAL_TECHUMBRE(new_fila, fila): 
+    """
+    Clasifica el material de la techumbre del hogar.
+
+    Args:
+        new_fila (list): Fila a modificar.
+        fila (list): Fila original del archivo CSV.
+    """
     try: 
         material = int(fila[14])  # IV4: Material de la techumbre
         if material in [5, 6, 7]:
@@ -66,8 +93,14 @@ def MATERIAL_TECHUMBRE(new_fila, fila):
     except: 
         new_fila.append("No tiene valor") 
 
-# Función para clasificar la densidad del hogar según el número de personas y ambientes
 def DENSIDAD_HOGAR(new_fila, fila): 
+    """
+    Clasifica la densidad del hogar según el número de personas y ambientes.
+
+    Args:
+        new_fila (list): Fila a modificar.
+        fila (list): Fila original del archivo CSV.
+    """
     try:
         # Manejar valores vacíos con un valor predeterminado
         ambientes = int(fila[11]) if fila[11].strip() else 0  # IV2: Número de ambientes
@@ -84,8 +117,15 @@ def DENSIDAD_HOGAR(new_fila, fila):
         # En caso de error, agregar un valor predeterminado
         new_fila.append("Datos inválidos")
 
-# Función para clasificar la condición de habitabilidad del hogar
 def CONDICION_DE_HABITABILIDAD(new_fila, fila):
+    """
+    Clasifica la condición de habitabilidad del hogar según disponibilidad de agua, baño,
+    ubicación del baño, desagüe y material de los pisos.
+
+    Args:
+        new_fila (list): Fila a modificar.
+        fila (list): Fila original del archivo CSV.
+    """
     tiene_agua = fila[16]  # IV6: Disponibilidad de agua
     tiene_bano = fila[19]  # IV8: Disponibilidad de baño
     ubicacion_bano = fila[20]  # IV9: Ubicación del baño
@@ -102,6 +142,6 @@ def CONDICION_DE_HABITABILIDAD(new_fila, fila):
         else:
             new_fila.append("regular")  
     else:
-        new_fila.append("insuficiente")  
+        new_fila.append("insuficiente")
 
 

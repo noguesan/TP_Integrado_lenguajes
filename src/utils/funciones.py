@@ -3,70 +3,95 @@ from pathlib import Path
 import csv
 from .constantes import DATA_PROCESSED_PATH, DATA_RAW_PATH , DATA_CLEAN_PATH
 
-# Define la ruta base de la carpeta "data", que está ubicada tres niveles arriba del archivo actual.
-# Función que escribe todas las líneas de un archivo en otro archivo.
-
 def unir_lineas(f, processed):
+    """
+    Escribe todas las líneas de un archivo en otro archivo.
+
+    Args:
+        f (file object): Archivo de lectura.
+        processed (file object): Archivo de escritura.
+
+    Returns:
+        str: El segundo carácter de la última línea procesada (puede usarse para control interno).
+    """
     for lines in f: 
         processed.write(lines)
         min = lines[1]
     return min
 
-# Función que combina múltiples archivos de un tipo específico en un único archivo CSV.
 def unir_archivos(tipo): 
-    # Define el patrón de búsqueda para los archivos y el nombre del archivo combinado.
+    """
+    Combina múltiples archivos de un tipo específico en un único archivo CSV.
+
+    Args:
+        tipo (str): Prefijo del tipo de archivo a combinar (por ejemplo, 'usu_individual').
+
+    Crea un archivo CSV combinado en la carpeta de datos procesados.
+    """
     new_tipo = str(tipo) + "*"
     new_tipo_csv = str(tipo) + ".csv"
     encabezado = False  
     archivo_processed = DATA_PROCESSED_PATH / new_tipo_csv  
 
     existe_min = False
-    
 
-    # Abre el archivo combinado en modo escritura.
     with archivo_processed.open("w") as processed:
-
-        # Itera sobre los trimestres en la carpeta de datos crudos.
         for trimestre in DATA_RAW_PATH.iterdir():
-    
-            # Itera sobre los usuarios dentro de cada trimestre.
             for usu in trimestre.iterdir():
-                # Busca archivos que coincidan con el patrón definido.
                 for archivo in usu.glob(new_tipo): 
-                    # Abre cada archivo encontrado.
                     with open(archivo, encoding="utf-8") as f:
                         if encabezado == False: 
-                            # Si no se ha escrito el encabezado, escribe todas las líneas.
                             unir_lineas(f, processed)
-                            encabezado = True  # Marca que el encabezado ya fue escrito.
+                            encabezado = True
                         else: 
-                            # Si el encabezado ya fue escrito, omite la primera línea.
                             next(f) 
                             unir_lineas(f, processed)
 
-# Función que calcula el porcentaje de un valor respecto a un total.
-
 def porcentaje(valor, total):
+    """
+    Calcula el porcentaje de un valor respecto a un total.
+
+    Args:
+        valor (float or int): Valor parcial.
+        total (float or int): Valor total.
+
+    Returns:
+        float: Porcentaje correspondiente.
+    """
     return (valor / total) * 100
 
-# Funciones de la Sección B
-
 def separar_por_trimestre(dict_anios): 
+    """
+    Separa un diccionario de años en subdiccionarios por trimestre.
+
+    Args:
+        dict_anios (dict): Diccionario con años como claves y listas de filas como valores.
+
+    Returns:
+        dict: Diccionario anidado por año y trimestre.
+    """
     dict_final = {}
     for anio in dict_anios:
         dict_temporal = {}
-        
         for filas in dict_anios[anio]:
             trimestre = filas[2]
             if trimestre not in dict_temporal: 
                 dict_temporal[trimestre] = []
             dict_temporal[trimestre].append(filas)
-
         dict_final[anio] = dict_temporal
     return dict_final
 
-
 def agrupar_por_anio_y_trimestre(filas, col_anio=1):
+    """
+    Agrupa filas por año y trimestre.
+
+    Args:
+        filas (list): Lista de filas (listas).
+        col_anio (int): Índice de la columna año.
+
+    Returns:
+        dict: Diccionario anidado por año y trimestre.
+    """
     grupos = {}
     for fila in filas:
         anio = fila[col_anio]
@@ -77,6 +102,16 @@ def agrupar_por_anio_y_trimestre(filas, col_anio=1):
     return grupos_final
 
 def agrupar_por_aglomerado(filas, col_aglomerado):
+    """
+    Agrupa filas por código de aglomerado.
+
+    Args:
+        filas (list): Lista de filas (listas).
+        col_aglomerado (int): Índice de la columna aglomerado.
+
+    Returns:
+        dict: Diccionario con códigos de aglomerado como claves y listas de filas como valores.
+    """
     grupos = {}
     for fila in filas:
         aglo = fila[col_aglomerado]
@@ -85,22 +120,43 @@ def agrupar_por_aglomerado(filas, col_aglomerado):
         grupos[aglo].append(fila)
     return grupos
 
-def obtener_archivo_reciente (dict_trimestres): 
+def obtener_archivo_reciente(dict_trimestres): 
+    """
+    Obtiene la lista de filas correspondiente al año y trimestre más reciente.
+
+    Args:
+        dict_trimestres (dict): Diccionario anidado por año y trimestre.
+
+    Returns:
+        list: Lista de filas del archivo más reciente.
+    """
     max_anio = max(dict_trimestres.keys())
     max_trimestre = max(dict_trimestres[max_anio].keys())
     return dict_trimestres[max_anio][max_trimestre]
 
-def obtener_archivo_viejo (dict_trimestres):
+def obtener_archivo_viejo(dict_trimestres):
+    """
+    Obtiene la lista de filas correspondiente al año y trimestre más antiguo.
+
+    Args:
+        dict_trimestres (dict): Diccionario anidado por año y trimestre.
+
+    Returns:
+        list: Lista de filas del archivo más antiguo.
+    """
     min_anio = min(dict_trimestres.keys())
     min_trimestre = min(dict_trimestres[min_anio].keys())
     return dict_trimestres[min_anio][min_trimestre]
 
-# -------------------------
-
-# funciones a agregar a Funciones.py
 def nombre_aglomerado(codigo):
     """
     Devuelve el nombre del aglomerado a partir de su código.
+
+    Args:
+        codigo (str): Código del aglomerado.
+
+    Returns:
+        str or None: Nombre del aglomerado o None si no existe.
     """
     dic_aglomerados = {
         '2': 'Gran La Plata',
@@ -142,13 +198,13 @@ def suma_ponderada(filas, condicion, col_pondera):
     """
     Calcula la suma ponderada de una determinada columna, considerando solo las filas que cumplen una condición.
 
-    Parámetros:
-    - filas: lista de listas, donde cada sublista representa una fila de datos.
-    - condicion: función que recibe una fila y devuelve True si debe ser considerada en la suma.
-    - col_pondera: índice entero que indica la posición de la columna que contiene el valor ponderador.
+    Args:
+        filas (list): Lista de listas, donde cada sublista representa una fila de datos.
+        condicion (function): Función que recibe una fila y devuelve True si debe ser considerada en la suma.
+        col_pondera (int): Índice de la columna que contiene el valor ponderador.
 
-    Retorna:
-    - Un número entero que representa la suma ponderada de las filas que cumplen con la condición.
+    Returns:
+        int: Suma ponderada de las filas que cumplen con la condición.
     """
     total = 0
     for fila in filas:
