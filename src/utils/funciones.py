@@ -148,6 +148,16 @@ def obtener_archivo_viejo(dict_trimestres):
     min_trimestre = min(dict_trimestres[min_anio].keys())
     return dict_trimestres[min_anio][min_trimestre]
 
+def obtener_fechas (dict_trimestres): 
+    max_anio = max(dict_trimestres.keys())
+    max_trimestre = max(dict_trimestres[max_anio].keys())
+    
+    min_anio = min(dict_trimestres.keys())
+    min_trimestre = min(dict_trimestres[min_anio].keys())
+
+    return (max_anio,max_trimestre), (min_anio,min_trimestre)
+
+
 def nombre_aglomerado(codigo):
     """
     Devuelve el nombre del aglomerado a partir de su código.
@@ -211,3 +221,25 @@ def suma_ponderada(filas, condicion, col_pondera):
         if condicion(fila):
             total += int(fila[col_pondera])
     return total
+
+
+def buscar_trimestre_faltante(archivos,archivos_faltantes):
+    new_archivos = list()
+
+    for elem in archivos: 
+        new_archivos.append(elem.split("_"))
+
+    if len(new_archivos) == 1: 
+        archivos_faltantes.append([new_archivos[0][1] , new_archivos[0][2][:2] , new_archivos[0][2][2:4]])
+                                #Tipo(individual/hogar) # trimestre         # anio
+        estado = True
+    return archivos_faltantes 
+
+
+def analizar_archivos():
+    archivos_faltantes = list()
+    for trimestre in DATA_RAW_PATH.iterdir(): 
+        for usu in trimestre.iterdir(): 
+            archivos_encontrados = [archivo.stem for archivo in usu.glob("usu_*")]
+            buscar_trimestre_faltante(archivos_encontrados,archivos_faltantes)  
+    return archivos_faltantes

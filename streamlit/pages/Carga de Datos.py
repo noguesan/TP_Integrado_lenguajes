@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 
 from src.procesamientos.pindividuos import actualizar_individuos
 from src.procesamientos.phogares import actualizar_hogar
-from src.utils.funciones import  agrupar_por_anio_y_trimestre,obtener_fechas
+from src.utils.funciones import  agrupar_por_anio_y_trimestre,obtener_fechas, analizar_archivos
 from src.utils.constantes import DATA_CLEAN_PATH
 
 
@@ -16,10 +16,15 @@ def actualizar_todo():
 
     Returns:
         bool: True si la actualización se realizó correctamente.
+
     """
-    actualizar_hogar()
-    actualizar_individuos()
-    return True
+    try: 
+        actualizar_hogar()
+        actualizar_individuos()
+        return True
+    except:
+        return False  
+        
 
 def mostrar_tiempo ():
     """
@@ -30,17 +35,11 @@ def mostrar_tiempo ():
     """
     archivo_clean_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
 
-    archivo_individuos = archivo_clean_path.open("r",encoding="utf-8") 
-    reader = csv.reader(archivo_individuos,delimiter=";")
-    header = next(reader)
+    with archivo_clean_path.open("r",encoding="utf-8") as archivo_individuos: 
+        reader = csv.reader(archivo_individuos,delimiter=",")
+        header = next(reader)
+        lista_filas_individual = list(reader)
 
-    new_list_i = []
-
-    for elem in reader:
-        new_elem = elem[0].split(',')
-        new_list_i.append(new_elem)
-
-    lista_filas_individual = new_list_i[:]
     anios_tri_individuos = agrupar_por_anio_y_trimestre(lista_filas_individual)
     mas_nuevo, mas_viejo = obtener_fechas(anios_tri_individuos)
 
@@ -67,5 +66,19 @@ if st.button(" Actualizar Dataset"):
     if datos:
         st.success(" Datos actualizados correctamente.")  # Mensaje de éxitos
         mas_nuevo_anio , mas_viejo_anio, mas_nuevo_tri, mas_viejo_tri = finalizar_fechas()
+        
+        st.subheader(f' {mas_viejo_anio:02d}/{mas_viejo_tri} hasta {mas_nuevo_anio:02d}/{mas_nuevo_tri}')
+    else: 
+        st.error("Ocurrio un error al actualizar los datasets")
 
-st.subheader(f' {mas_viejo_anio:02d}/{mas_viejo_tri} hasta {mas_nuevo_anio:02d}/{mas_nuevo_tri}')
+
+
+st.header("Comprobar si existen todos los archivos correctamente")
+
+if st.button("Comprobar estado archivos"):
+    faltantes = analizar_archivos()
+    if len(faltantes) == 0: 
+       st.success("No hay faltantes en los archivos")
+    else: 
+        for archivo in faltantes: 
+            st.warning(f"Falta el archivo {archivo[0]} para el Trimestre {archivo[1][1]} en el año 20{archivo[2]}")   
