@@ -10,14 +10,25 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from src.utils.funciones import unir_archivos  
 from src.utils.constantes import DATA_CLEAN_PATH, DATA_PROCESSED_PATH  
 
-# Función para procesar y limpiar los datos de individuos
 def actualizar_clean_individuos():
+    """
+    Procesa y limpia los datos de individuos, agregando columnas derivadas como género, nivel educativo,
+    condición laboral y si es universitario. Guarda el resultado en un nuevo archivo CSV limpio.
+    """
     # Definir las rutas de los archivos de entrada y salida
     archivo_clean = DATA_CLEAN_PATH / "usu_clean_individual.csv"  
     archivo_processed = DATA_PROCESSED_PATH / "usu_individual.csv"  
 
-    # Función interna para transformar una fila
     def new_fila(fila):
+        """
+        Transforma una fila agregando las nuevas columnas procesadas.
+
+        Args:
+            fila (list): Fila original del archivo CSV.
+
+        Returns:
+            list: Fila original con las nuevas columnas agregadas.
+        """
         new_fila = fila  # Copiar la fila original
         ch04_str(new_fila, fila)  # Agregar columna de género
         nivel_ed(new_fila, fila)  # Agregar columna de nivel educativo
@@ -38,20 +49,35 @@ def actualizar_clean_individuos():
                 new_fila_1 = new_fila(fila)  
                 escritor.writerow(new_fila_1)  
 
-# Función principal para actualizar los datos de individuos
 def actualizar_individuos():
+    """
+    Ejecuta el proceso completo de actualización de los datos de individuos,
+    uniendo archivos y limpiando los datos.
+    """
     unir_archivos("usu_individual") 
     actualizar_clean_individuos()  
 
-# Función para agregar una columna con el género basado en el campo CH04
 def ch04_str(new_fila, fila):  
+    """
+    Agrega una columna con el género basado en el campo CH04.
+
+    Args:
+        new_fila (list): Fila a modificar.
+        fila (list): Fila original del archivo CSV.
+    """
     if fila[11] == "1":  
         new_fila.append("masculino")
     else:  
         new_fila.append("femenino")
 
-# Función para agregar una columna con el nivel educativo basado en el campo NIVEL_ED
 def nivel_ed(new_fila, fila):
+    """
+    Agrega una columna con el nivel educativo basado en el campo NIVEL_ED.
+
+    Args:
+        new_fila (list): Fila a modificar.
+        fila (list): Fila original del archivo CSV.
+    """
     if fila[26] == "1": 
         new_fila.append("primario incompleto")
     elif fila[26] == "2": 
@@ -65,8 +91,14 @@ def nivel_ed(new_fila, fila):
     else:
         new_fila.append("sin informacion") 
 
-# Función para agregar una columna con la condición laboral basada en los campos CONDICION y CAT_OCUP
 def condicion_laboral(new_fila, fila):
+    """
+    Agrega una columna con la condición laboral basada en los campos CONDICION y CAT_OCUP.
+
+    Args:
+        new_fila (list): Fila a modificar.
+        fila (list): Fila original del archivo CSV.
+    """
     if fila[27] == "1":  
         if fila[28] == "1" or fila[28] == "2": 
             new_fila.append("ocupado autonomo")  
@@ -79,12 +111,18 @@ def condicion_laboral(new_fila, fila):
     else: 
         new_fila.append("fuera de categoria")  
 
-# Función para agregar una columna indicando si es universitario basado en la edad y nivel educativo
 def universitario(new_fila, fila): 
+    """
+    Agrega una columna indicando si es universitario basado en la edad y nivel educativo.
+
+    Args:
+        new_fila (list): Fila a modificar.
+        fila (list): Fila original del archivo CSV.
+    """
     if fila[13] < "18":  
         new_fila.append("2")  
     else: 
         if fila[26] == "5" or fila[26] == "6":  
             new_fila.append("1")  
         else: 
-            new_fila.append("0") 
+            new_fila.append("0")
