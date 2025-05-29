@@ -1,7 +1,18 @@
 from glob import glob 
 from pathlib import Path 
 import csv
-from .constantes import DATA_PROCESSED_PATH, DATA_RAW_PATH , DATA_CLEAN_PATH
+DATA_PATH = Path(__file__).parent.parent.parent / "data" 
+
+# Ruta para los datos limpios.
+DATA_CLEAN_PATH = DATA_PATH / "clean"
+
+# Ruta para los datos procesados.
+DATA_PROCESSED_PATH = DATA_PATH / "processed"
+
+# Ruta para los datos crudos.
+DATA_RAW_PATH = DATA_PATH / "raw"
+
+
 
 def unir_lineas(f, processed):
     """
@@ -16,8 +27,7 @@ def unir_lineas(f, processed):
     """
     for lines in f: 
         processed.write(lines)
-        min = lines[1]
-    return min
+      
 
 def unir_archivos(tipo): 
     """
@@ -33,19 +43,18 @@ def unir_archivos(tipo):
     encabezado = False  
     archivo_processed = DATA_PROCESSED_PATH / new_tipo_csv  
 
-    existe_min = False
-
     with archivo_processed.open("w") as processed:
         for trimestre in DATA_RAW_PATH.iterdir():
             for usu in trimestre.iterdir():
                 for archivo in usu.glob(new_tipo): 
-                    with open(archivo, encoding="utf-8") as f:
+                    with open(archivo) as f:
                         if encabezado == False: 
                             unir_lineas(f, processed)
                             encabezado = True
                         else: 
                             next(f) 
                             unir_lineas(f, processed)
+
 
 def porcentaje(valor, total):
     """
