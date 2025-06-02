@@ -20,32 +20,28 @@ st.subheader("En esta pagina se visualiza los datos demograficos")
 
 archivo_clean_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
 df = pd.read_csv(archivo_clean_path, delimiter=",", low_memory=False)
-
+df['PP09A_ESP'] = df['PP09A_ESP'].fillna(0)
 # Seleccionar trimestres disponibles 
 
 anios =  sorted(df["ANO4"].astype(str).unique())
-
+aglomerados = sorted(df["AGLOMERADO"].unique())
 
 anio_seleccionado = st.selectbox("Seleccione el año", options=anios)
 if str(anio_seleccionado) not in anios:
     st.error("No se a encontrado el año en el sistema, seleccione otro")
 
-df = df[df["ANO4"] == int(anio_seleccionado)]
+df_anio_selec = df[df["ANO4"] == int(anio_seleccionado)].copy()
 
-trimestres = sorted(df['TRIMESTRE'].astype(str).unique())
+trimestres = sorted(df_anio_selec['TRIMESTRE'].astype(str).unique())
 
 tri_seleccionado = st.selectbox("Seleccione el trimestre a buscar", options=trimestres)
 
-df = df[df["TRIMESTRE"] == int(tri_seleccionado)]
-
-
-# Arreglando columna problematica
-df['PP09A_ESP'] = df['PP09A_ESP'].fillna(0)
+df_tri_anio_selec = df_anio_selec[df_anio_selec["TRIMESTRE"] == int(tri_seleccionado)]
 
 # ACTIV 1.3.1
 
 ## Filtrando para resolver la primera actividad
-df_filtrado = df[["PONDERA","CH04", "CH06"]].copy()
+df_filtrado = df_tri_anio_selec[["PONDERA","CH04", "CH06"]].copy()
 
 rango_anios = range(0,101,10)
 etiquetas =  [f"{i}-{i+9}" for i in rango_anios[:-1]] 
@@ -89,22 +85,48 @@ st.dataframe(df_aglomerado)
 
 # ACTIV 1.3.3 
 
-aglo_seleccionado = st.number_input("Ingrese el Aglomerado", min_value=0, step=1, format="%d")
+st.subheader("Evolucion del Cociente por aglomerado")
+aglo_seleccionado = st.selectbox("Elija un aglomerado",options= aglomerados)
 
-df_activos = df[(df["AGLOMERADO"] == aglo_seleccionado) & (df["CH06"].between(15,64,inclusive="both")) ][["AGLOMERADO","CH06","PONDERA"]].copy()
-df_not_activos = df[(df["AGLOMERADO"] == aglo_seleccionado) & ( ~df["CH06"].between(15,64,inclusive="both")) ][["AGLOMERADO","CH06","PONDERA"]].copy()
+df_activos = df[(df["AGLOMERADO"] == aglo_seleccionado) & (df["CH06"].between(15,64,inclusive="both")) ][["ANO4","TRIMESTRE","PONDERA"]].copy()
+df_inactivos = df[(df["AGLOMERADO"] == aglo_seleccionado) & ( ~df["CH06"].between(15,64,inclusive="both")) ][["ANO4","TRIMESTRE","PONDERA"]].copy()
 
-df_activos = df_activos.groupby(["AGLOMERADO"]).sum("PONDERA")
-df_not_activos = df_not_activos.groupby(["AGLOMERADO"]).sum("PONDERA")
+df_activos = df_activos.groupby(["ANO4","TRIMESTRE"]).sum("PONDERA").reset_index()
+df_inactivos = df_inactivos.groupby(["ANO4","TRIMESTRE"]).sum("PONDERA").reset_index()
 
-df_not_activos["grupo"] = "no activos"
 df_activos["grupo"] = "activos"
+df_inactivos["grupo"] = "inactivos"
 
-df_activos = df_activos.rename(columns={"PONDERA" : "PONDERA_A"})
-df_not_activos = df_not_activos.rename(columns={"PONDERA" : "PONDERA_NA"})
+df_union = pd.concat([df_inactivos, df_activos])
 
-df_union = df_activos.merge(df_not_activos, on="AGLOMERADO", how="inner")
-df_union["Cociente Activos/noActivos"] = ( df_union["PONDERA_NA"] / df_union["PONDERA_A"]  ) * 100
+df_union['periodo'] = df_union['ANO4'].astype(str) + 'T' + df_union['TRIMESTRE'].astype(str)
 
-st.dataframe(df_union[["PONDERA_A", "PONDERA_NA", "Cociente Activos/noActivos"]])
-# HACER UNA GRAFICA DE TORTA DE ACTIVOS Y NO ACTIVOS 
+df_union = df_union.pivot(index="periodo",columns="grupo",values="PONDERA")
+
+df_union["cociente"] = (df_union["inactivos"] / df_union["activos"] * 100).round(2)
+
+st.dataframe(df_union)
+st.bar_chart(df_union[["activos","inactivos"]],stack=False)
+
+# ACTIV 1.3.4
+
+st.subheader("Evolucion de la edad media ")
+
+df_edad = df[["ANO4","PONDERA","TRIMESTRE","CH06"]].copy()
+
+df_edad['periodo'] = df_edad['ANO4'].astype(str) + 'T' + df_edad['TRIMESTRE'].astype(str)
+
+df_edad = df_edad.groupby(["ANO4","CH06","TRIMESTRE","periodo"]).sum("PONDERA")
+df_edad= df_edad.reset_index()
+
+df_edad = df_edad.pivot(index="CH06", columns="periodo",values="PONDERA")
+
+df_edad.index.name = 'edad'
+
+# Calculamos la media ponderada de la edad por periodo
+media_edad_ponderada = ((df_edad.mul(df_edad.index, axis=0)).sum() / df_edad.sum() ).round(2)
+
+media_edad_ponderada_df = media_edad_ponderada.to_frame(name='media_edad')
+
+st.dataframe(media_edad_ponderada_df)
+st.line_chart(media_edad_ponderada_df)
