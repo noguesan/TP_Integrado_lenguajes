@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
 st.title("Cantidad de personas según el máximo nivel educativo alcanzado")
 
@@ -7,20 +8,27 @@ st.title("Cantidad de personas según el máximo nivel educativo alcanzado")
 df = pd.read_csv("data/clean/usu_clean_individual.csv")
 df_hogar = pd.read_csv("data/clean/usu_clean_hogar.csv")
 
-# Ingreso manual del años
-anio = st.number_input("Ingrese un año", step=1, format="%d")
+# --- QUEDARSE SOLO CON EL ÚLTIMO TRIMESTRE DE CADA AÑO ---
+ultimos_trimestres = df.groupby('ANO4')['TRIMESTRE'].max().reset_index()
+df = df.merge(ultimos_trimestres, on=['ANO4', 'TRIMESTRE'])
+
+# Selección de año
+anios_disponibles = df['ANO4'].unique()
+anio = st.selectbox("Seleccione un año", anios_disponibles)
 
 # Filtrar por año
 df_anio = df[df['ANO4'] == anio]
 
-# --- Punto 1.6.1: Cantidad de personas por nivel educativo ---
+# --- Punto 1.6.1: Cantidad de personas por nivel educativo (ponderada) ---
 st.subheader("Distribución general por nivel educativo")
-conteo = df_anio['NIVEL_ED_str'].value_counts().reset_index()
-conteo.columns = ['Nivel educativo', 'Cantidad de personas']
-st.dataframe(conteo)
-st.bar_chart(conteo.set_index('Nivel educativo'))
 
-# --- Punto 1.6.2: Nivel educacional más común por grupo etario ---
+conteo_ponderado = df_anio.groupby('NIVEL_ED_str')['PONDERA'].sum().reset_index()
+conteo_ponderado.columns = ['Nivel educativo Maximo', 'Cantidad de personas']
+st.dataframe(conteo_ponderado)
+st.bar_chart(conteo_ponderado.set_index('Nivel educativo Maximo'))
+
+
+# --- Punto 1.6.2: Nivel educacional más común por grupo etario 
 st.subheader("Nivel educacional más común por grupo etario")
 
 grupos = [
@@ -46,20 +54,22 @@ for nombre, edad_min, edad_max in grupos:
     else:
         df_grupo = df[(df['CH06'] >= edad_min) & (df['CH06'] < edad_max)]
     if not df_grupo.empty:
-        nivel_comun = df_grupo['NIVEL_ED_str'].mode()[0]
-        cantidad = (df_grupo['NIVEL_ED_str'] == nivel_comun).sum()
-        resultados.append([nombre, nivel_comun, cantidad])
+        # Agrupar por nivel educativo y sumar la ponderación
+        nivel_ponderado = df_grupo.groupby('NIVEL_ED_str')['PONDERA'].sum()
+        nivel_comun = nivel_ponderado.idxmax()
+        cantidad = nivel_ponderado.max()
+        resultados.append([nombre, nivel_comun, int(cantidad)])
     else:
         resultados.append([nombre, "Sin datos", 0])
 
-tabla_resultados = pd.DataFrame(resultados, columns=["Grupo de edad", "Nivel educativo más común", "Cantidad de personas"])
+tabla_resultados = pd.DataFrame(resultados, columns=["Grupo de edad", "Nivel educativo más común", "Cantidad de personas (ponderada)"])
 st.dataframe(tabla_resultados)
+st.bar_chart(tabla_resultados.set_index("Grupo de edad")["Cantidad de personas (ponderada)"])
 
-# --- Punto 1.6.3: Ranking y exportación ---
+# --- Punto 1.6.3: Ranking y exportación 
 st.subheader("Ranking de los 5 aglomerados con mayor porcentaje de hogares con 2+ ocupantes con estudios universitarios o superiores finalizados")
 
 # Filtrar solo hogares con al menos 2 personas con estudios universitarios o superiores finalizados
-# Suponiendo que 'CODUSU' es el identificador de hogar y 'NIVEL_ED_str' está en df
 universitarios = df[df['NIVEL_ED_str'] == "superior o universitario"]
 conteo_hogar = universitarios.groupby('CODUSU').size().reset_index(name='cant_uni')
 hogares_2mas = conteo_hogar[conteo_hogar['cant_uni'] >= 2]
@@ -75,6 +85,8 @@ ranking['porcentaje'] = 100 * ranking['hogares_2mas'] / ranking['total_hogares']
 ranking = ranking.sort_values('porcentaje', ascending=False).head(5)
 
 st.dataframe(ranking)
+st.line_chart(ranking.set_index('AGLOMERADO')['porcentaje'])
+
 
 # Botón para exportar a CSV
 csv = ranking.to_csv(index=False).encode('utf-8')
@@ -84,7 +96,8 @@ st.download_button(
     file_name='ranking_aglomerados.csv',
     mime='text/csv'
 )
-# --- Punto 1.6.4: Porcentaje de personas mayores a 6 años capaces e incapaces de leer y escribir ---
+
+# --- Punto 1.6.4: Porcentaje de personas mayores a 6 años capaces e incapaces de leer y escribir 
 st.subheader("Porcentaje de personas mayores a 6 años capaces e incapaces de leer y escribir por año")
 resultados_lectoescritura = []
 
@@ -100,4 +113,4 @@ for anio in sorted(df['ANO4'].unique()):
 
 tabla_lectoescritura = pd.DataFrame(resultados_lectoescritura, columns=["Año", "% Capaces de leer y escribir", "% Incapaces de leer y escribir"])
 st.dataframe(tabla_lectoescritura)
-                                                                     
+st.bar_chart(tabla_lectoescritura[["% Capaces de leer y escribir","% Incapaces de leer y escribir"]],stack=False)
