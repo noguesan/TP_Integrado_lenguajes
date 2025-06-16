@@ -14,10 +14,10 @@ from src.utils.funciones import nombre_aglomerado
 
 
 st.title("1.3 (P3) Características demográficas")
-st.subheader("En esta pagina se visualiza los datos demograficos")
+st.subheader("En esta pagina se visualiza los datos demograficos de los archivos")
 
 # Abrir el Archivo
-
+st.header("Poblacion para el año y trimestre ingresado")
 archivo_clean_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
 df = pd.read_csv(archivo_clean_path, delimiter=",", low_memory=False)
 df['PP09A_ESP'] = df['PP09A_ESP'].fillna(0)
@@ -51,7 +51,7 @@ df_filtrado["CH06"] = pd.to_numeric(df_filtrado["CH06"], errors="coerce")
 df_filtrado["grupos_edad"] = pd.cut(df_filtrado["CH06"], bins=rango_anios , labels=etiquetas)
 
 ## Convirtiendo los valores de sexo en Strings legibles
-df_filtrado["CH04"] = df_filtrado["CH04"].apply(lambda x: "M" if x == 1 else "F")
+df_filtrado["CH04"] = df_filtrado["CH04"].apply(lambda x: "Masculino" if x == 1 else "Femenino")
 
 df_filtrado = df_filtrado.groupby(["CH04","grupos_edad"])["PONDERA"].sum().reset_index()
 
@@ -64,7 +64,7 @@ st.bar_chart(df_pivot, stack=False)
 
 # ACTIV 1.3.2
 
-st.subheader("Promedio de edades para los aglomerados del ultimo archivo ingresado")
+st.header("Promedio de edades para los aglomerados del ultimo archivo ingresado")
 
 ultimo_anio = int(df["ANO4"].unique().max())
 df_ult_anio = df[df["ANO4"] == ultimo_anio]
@@ -85,7 +85,7 @@ st.dataframe(df_aglomerado)
 
 # ACTIV 1.3.3 
 
-st.subheader("Evolucion del Cociente por aglomerado")
+st.header("Evolucion del Cociente de activos e inactivos por aglomerado")
 aglo_seleccionado = st.selectbox("Elija un aglomerado",options= aglomerados)
 
 df_activos = df[(df["AGLOMERADO"] == aglo_seleccionado) & (df["CH06"].between(15,64,inclusive="both")) ][["ANO4","TRIMESTRE","PONDERA"]].copy()
@@ -105,12 +105,12 @@ df_union = df_union.pivot(index="periodo",columns="grupo",values="PONDERA")
 
 df_union["cociente"] = (df_union["inactivos"] / df_union["activos"] * 100).round(2)
 
-st.dataframe(df_union)
+st.table(df_union)
 st.bar_chart(df_union[["activos","inactivos"]],stack=False)
 
 # ACTIV 1.3.4
 
-st.subheader("Evolucion de la edad media ")
+st.header("Evolucion de la edad media ")
 
 df_edad = df[["ANO4","PONDERA","TRIMESTRE","CH06"]].copy()
 
@@ -130,3 +130,14 @@ media_edad_ponderada_df = media_edad_ponderada.to_frame(name='media_edad')
 
 st.dataframe(media_edad_ponderada_df)
 st.line_chart(media_edad_ponderada_df)
+
+datos = []
+for columna in df_edad.columns: 
+    serie = df_edad[columna].dropna()
+    datos.append({"periodo" : columna , "mediana" : serie.index.to_series().median()})
+    
+df_nuevo = pd.DataFrame(datos)
+df_nuevo = df_nuevo.set_index("periodo")
+
+st.header("Mediana de las edades")
+st.dataframe(df_nuevo)
