@@ -6,6 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 from src.utils.constantes import DATA_CLEAN_PATH, PARENT_PATH
 from src.utils.funciones import convertir_en_fecha
 import pandas as pd 
+import matplotlib.pyplot as plt
 
 st.title("1.7 (P7) Ingresos")
 
@@ -60,4 +61,17 @@ def comprobar_promedio(valor):
     
 hogares_4_df["estado"] = hogares_4_df["ITF"].apply(comprobar_promedio)
 hogares_final = hogares_4_df[["estado","PONDERA"]].groupby(["estado"]).sum("PONDERA")
-st.bar_chart(hogares_final)
+
+hogares_final = hogares_final.reset_index()
+
+
+fig, ax = plt.subplots()
+ax.pie(
+    hogares_final["PONDERA"],
+    labels=hogares_final["estado"],
+    autopct="%1.1f%%",
+    startangle=90
+)
+ax.axis("equal") 
+
+st.pyplot(fig)
