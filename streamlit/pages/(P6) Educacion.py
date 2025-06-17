@@ -1,7 +1,11 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+<<<<<<< HEAD:streamlit/pages/Educacion.py
 st.title("Educacion")
+=======
+st.title("1.6 (P6) Educacion")
+>>>>>>> ba48ca698186ba5648e07b578c21013089aa00c8:streamlit/pages/(P6) Educacion.py
 st.subheader("Cantidad de personas según el máximo nivel educativo alcanzado")
 
 # Cargar el dataset limpio
@@ -151,6 +155,7 @@ if st.button("Calcular ranking"):
         file_name='ranking_aglomerados.csv',
         mime='text/csv'
     )
+    
 # --- Punto 1.6.4: Porcentaje de personas mayores a 6 años capaces e incapaces de leer y escribir 
 st.subheader("Porcentaje de personas mayores a 6 años capaces e incapaces de leer y escribir por año")
 resultados_lectoescritura = []

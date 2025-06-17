@@ -12,4 +12,5 @@ DATA_PROCESSED_PATH = DATA_PATH / "processed"
 # Ruta para los datos crudos.
 DATA_RAW_PATH = DATA_PATH / "raw"
 
-
+# Ruta padre de todas 
+PARENT_PATH = Path(__file__).parent.parent.parent
