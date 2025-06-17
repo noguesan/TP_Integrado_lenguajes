@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-
-st.title("Cantidad de personas según el máximo nivel educativo alcanzado")
+st.title("1.6 (P6) Educacion")
+st.subheader("Cantidad de personas según el máximo nivel educativo alcanzado")
 
 # Cargar el dataset limpio
 df = pd.read_csv("data/clean/usu_clean_individual.csv")

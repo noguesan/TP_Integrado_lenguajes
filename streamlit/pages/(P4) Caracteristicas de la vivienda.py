@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from src.utils.constantes import DATA_CLEAN_PATH
 
-st.title("Características de la vivienda")
+st.title("1.4 (P4) Características de la vivienda")
 
 # --- Cargar datos de hogares usando pandas y DATA_CLEAN_PATH ---
 archivo_clean_path = DATA_CLEAN_PATH / "usu_clean_hogar.csv"

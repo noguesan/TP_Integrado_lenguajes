@@ -252,3 +252,13 @@ def analizar_archivos():
             archivos_encontrados = [archivo.stem for archivo in usu.glob("usu_*")]
             buscar_trimestre_faltante(archivos_encontrados,archivos_faltantes)  
     return archivos_faltantes
+
+def convertir_en_fecha (anio,trim):
+    if trim != 4:
+        if trim == 1:  
+            fechas_selec = [str(anio) + "-0" + str((trim * 3) - 2) + "-" + "01",str(anio) + "-0" + str(trim * 3 ) + "-" + "31" ]
+        else: 
+            fechas_selec = [str(anio) + "-0" + str((trim * 3) - 2) + "-" + "01",str(anio) + "-0" + str(trim * 3 ) + "-" + "30" ]
+    else: 
+        fechas_selec = [str(anio) + "-" + str((trim * 3) - 2) + "-" + "01",str(anio) + "-" + str(trim * 3 ) + "-" + "31" ]
+    return fechas_selec

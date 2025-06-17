@@ -27,8 +27,6 @@ anios =  sorted(df["ANO4"].astype(str).unique())
 aglomerados = sorted(df["AGLOMERADO"].unique())
 
 anio_seleccionado = st.selectbox("Seleccione el año", options=anios)
-if str(anio_seleccionado) not in anios:
-    st.error("No se a encontrado el año en el sistema, seleccione otro")
 
 df_anio_selec = df[df["ANO4"] == int(anio_seleccionado)].copy()
 
