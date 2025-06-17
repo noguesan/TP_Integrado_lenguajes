@@ -151,6 +151,7 @@ if st.button("Calcular ranking"):
         file_name='ranking_aglomerados.csv',
         mime='text/csv'
     )
+
 # --- Punto 1.6.4: Porcentaje de personas mayores a 6 años capaces e incapaces de leer y escribir 
 st.subheader("Porcentaje de personas mayores a 6 años capaces e incapaces de leer y escribir por año")
 resultados_lectoescritura = []
