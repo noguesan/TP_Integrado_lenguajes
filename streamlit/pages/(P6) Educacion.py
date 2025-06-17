@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-<<<<<<< HEAD:streamlit/pages/Educacion.py
+
 st.title("Educacion")
-=======
+
 st.title("1.6 (P6) Educacion")
->>>>>>> ba48ca698186ba5648e07b578c21013089aa00c8:streamlit/pages/(P6) Educacion.py
+
 st.subheader("Cantidad de personas según el máximo nivel educativo alcanzado")
 
 # Cargar el dataset limpio
