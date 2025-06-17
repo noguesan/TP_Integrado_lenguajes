@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-
-st.title("Cantidad de personas según el máximo nivel educativo alcanzado")
+st.title("Educacion")
+st.subheader("Cantidad de personas según el máximo nivel educativo alcanzado")
 
 # Cargar el dataset limpio
 df = pd.read_csv("data/clean/usu_clean_individual.csv")
@@ -69,34 +69,89 @@ st.bar_chart(tabla_resultados.set_index("Grupo de edad")["Cantidad de personas (
 # --- Punto 1.6.3: Ranking y exportación 
 st.subheader("Ranking de los 5 aglomerados con mayor porcentaje de hogares con 2+ ocupantes con estudios universitarios o superiores finalizados")
 
-# Filtrar solo hogares con al menos 2 personas con estudios universitarios o superiores finalizados
-universitarios = df[df['NIVEL_ED_str'] == "superior o universitario"]
-conteo_hogar = universitarios.groupby('CODUSU').size().reset_index(name='cant_uni')
-hogares_2mas = conteo_hogar[conteo_hogar['cant_uni'] >= 2]
+# Funciones auxiliares
+def tiene_dos_ocupantes(elem):
+    return int(elem[64]) >= 2
 
-# Unir con datos de hogar para obtener el aglomerado
-hogares_2mas = hogares_2mas.merge(df_hogar[['CODUSU', 'AGLOMERADO']], on='CODUSU', how='left')
+def es_universitario(elem):
+    return elem[26] in ["5", "6"]
 
-# Calcular porcentaje de hogares con 2+ universitarios por aglomerado
-total_hogares = df_hogar.groupby('AGLOMERADO').size().reset_index(name='total_hogares')
-hogares_con_2mas = hogares_2mas.groupby('AGLOMERADO').size().reset_index(name='hogares_2mas')
-ranking = hogares_con_2mas.merge(total_hogares, on='AGLOMERADO')
-ranking['porcentaje'] = 100 * ranking['hogares_2mas'] / ranking['total_hogares']
-ranking = ranking.sort_values('porcentaje', ascending=False).head(5)
+def porcentaje(a, b):
+    return 100 * a / b if b != 0 else 0
 
-st.dataframe(ranking)
-st.line_chart(ranking.set_index('AGLOMERADO')['porcentaje'])
+def calcular_ranking(ultimos_individuos, ultimos_hogares):
+    hogares_CODUSU, individuos_CODUSU, hogares, individuos = [], [], [], []
+    poblacion_total_aglomerado, encuestas_finales, porcentajes_finales = {}, {}, {}
 
+    for elem in ultimos_hogares:
+        if not tiene_dos_ocupantes(elem):
+            continue
+        hogares.append(elem)
+        hogares_CODUSU.append(elem[0])
 
-# Botón para exportar a CSV
-csv = ranking.to_csv(index=False).encode('utf-8')
-st.download_button(
-    label="Descargar ranking en CSV",
-    data=csv,
-    file_name='ranking_aglomerados.csv',
-    mime='text/csv'
-)
+    for elem in ultimos_individuos:
+        if not es_universitario(elem):
+            continue
+        individuos.append(elem)
+        individuos_CODUSU.append(elem[0])
 
+    for elem in hogares:
+        if elem[7] not in poblacion_total_aglomerado:
+            poblacion_total_aglomerado[elem[7]] = 0
+        poblacion_total_aglomerado[elem[7]] += int(elem[8])
+
+        if elem[0] not in individuos_CODUSU:
+            continue
+
+        if elem[7] not in encuestas_finales:
+            encuestas_finales[elem[7]] = []
+        encuestas_finales[elem[7]].append(elem)
+
+    for aglomerado in encuestas_finales:
+        poblacion_final_aglomerado = 0
+        for elem in encuestas_finales[aglomerado]:
+            poblacion_final_aglomerado += int(elem[8])
+        porcentajes_finales[aglomerado] = porcentaje(
+            poblacion_final_aglomerado, poblacion_total_aglomerado[aglomerado]
+        )
+
+    ranking = pd.DataFrame([
+        {"Aglomerado": aglo, "Porcentaje": porcentajes_finales[aglo]}
+        for aglo in sorted(porcentajes_finales, key=porcentajes_finales.get, reverse=True)[:5]
+    ])
+    return ranking
+
+# Carga de datos
+df_individuos = pd.read_csv("data/clean/usu_clean_individual.csv", dtype=str)
+df_hogares = pd.read_csv("data/clean/usu_clean_hogar.csv", dtype=str)
+
+# Selectores de año y trimestre
+anios = sorted(df_individuos["ANO4"].astype(int).unique())
+trimestres = sorted(df_individuos["TRIMESTRE"].astype(int).unique())
+
+anio = st.selectbox("Elegí el año", anios)
+trimestre = st.selectbox("Elegí el trimestre", trimestres)
+
+# Filtrado según selección
+individuos = df_individuos[(df_individuos["ANO4"].astype(int) == anio) & (df_individuos["TRIMESTRE"].astype(int) == trimestre)]
+hogares = df_hogares[(df_hogares["ANO4"].astype(int) == anio) & (df_hogares["TRIMESTRE"].astype(int) == trimestre)]
+
+ultimos_individuos = individuos.values.tolist()
+ultimos_hogares = hogares.values.tolist()
+
+if st.button("Calcular ranking"):
+    ranking = calcular_ranking(ultimos_individuos, ultimos_hogares)
+    st.dataframe(ranking)
+    # Gráfico de líneas
+    st.line_chart(ranking.set_index('Aglomerado')['Porcentaje'])
+    csv = ranking.to_csv(index=False)
+    st.download_button(
+        label="Descargar ranking en CSV",
+        data=csv,
+        file_name='ranking_aglomerados.csv',
+        mime='text/csv'
+    )
+    
 # --- Punto 1.6.4: Porcentaje de personas mayores a 6 años capaces e incapaces de leer y escribir 
 st.subheader("Porcentaje de personas mayores a 6 años capaces e incapaces de leer y escribir por año")
 resultados_lectoescritura = []
