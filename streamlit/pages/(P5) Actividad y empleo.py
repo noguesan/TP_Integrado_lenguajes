@@ -10,89 +10,30 @@ from streamlit_folium import st_folium
 import matplotlib.pyplot as plt
 
 # =======================================================
-# Cargar datos de personas
-# =======================================================
+# Preparaacion de datos
+# ======================================================= 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from src.utils.constantes import DATA_CLEAN_PATH
 import src.utils.funciones_page_ActividadYEmpleo as fe
+from src.utils.Filtros_Streamlit import mostrar_sidebar_con_filtros
+
+# path de base de datos
+archivo_personas_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
+# Filtrado de la base de datos para los preprarar los dataframe necesarios
+df_personas,df_personas_filtrado,df_filtrado_aglomerado ,df_filtrado_Ano4Trimestre = mostrar_sidebar_con_filtros(archivo_personas_path)
+
+# =======================================================
+# Contenido de la pagina
+# ======================================================= 
 
 st.title("1.5 (P5) Actividad y empleo")
 st.write("""
 En esta sección se visualizará información relacionada a la actividad y empleo según la EPH.
 """)
 
-archivo_personas_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
-
-# try:
-#     df_personas = pd.read_csv(archivo_personas_path, encoding="utf-8", low_memory=False)
-#     st.success(f"Archivo cargado correctamente. Filas: {len(df_personas)}")
-# except Exception as e:
-#     st.error(f"No se pudo cargar el archivo: {e}")
-
-# =======================================================
-# Filtros
-# ======================================================= 
-
-# ## enlistar valores unicos en el dataFrame
-# anios = sorted(df_personas["ANO4"].dropna().unique().tolist())
-# trimestres = sorted(df_personas["TRIMESTRE"].dropna().unique().tolist())
-# aglomerados = sorted(df_personas["AGLOMERADO"].dropna().unique().tolist())
-
-# ## SelectBox con las opciones
-# anio_seleccionado = st.selectbox("Seleccione un año", options=anios)
-# trimestre_seleccionado = st.selectbox("Seleccione un trimestre", options=trimestres)
-# aglomerado_seleccionado = st.selectbox("Seleccione un aglomerado (opcional)", options=["Todos"] + aglomerados)
-
-# anios_trimestres = {}
-# for anio in sorted(df_personas["ANO4"].dropna().unique()):
-#     trimestres = sorted(df_personas[df_personas["ANO4"] == anio]["TRIMESTRE"].dropna().unique())
-#     anios_trimestres[anio] = trimestres
-
-# # Selectbox para año (usa las claves del diccionario)
-# anio_seleccionado = st.selectbox("Seleccione un año", options=list(anios_trimestres.keys()))
-
-# # Selectbox para trimestre (usa los valores asociados a la clave seleccionada)
-# trimestres_disponibles = anios_trimestres[anio_seleccionado]
-# trimestre_seleccionado = st.selectbox("Seleccione un trimestre", options=trimestres_disponibles)
-
-# # Aglomerados (independiente del año/trimestre)
-
-# ## Opcion 1 simple, pero solo aparecen numero de agloemrados
-# # aglomerados = sorted(df_personas["AGLOMERADO"].dropna().unique().tolist())
-# # aglomerado_seleccionado = st.selectbox("Seleccione un aglomerado (opcional)", options=["Todos"] + aglomerados)
-
-# ## Opcion 2 simple, pero con nombres de aglomerados
-# aglomerados_dict = fe.cargar_aglomerados_coordenadas()
-# ### Crear una lista de tuplas (nombre, código) para mostrar los nombres, pero conservar la clave
-# opciones_aglomerados = [("Todos", "Todos")] + [
-#     (info["nombre"], codigo) for codigo, info in sorted(aglomerados_dict.items())
-# ]
-# ### Mostrar el selectbox con los nombres visibles
-# aglomerado_nombre_seleccionado = st.selectbox(
-#     "Seleccione un aglomerado (opcional)",
-#     options=opciones_aglomerados,
-#     format_func=lambda x: x[0]  # Muestra el nombre del aglomerado
-# )
-# ### Extraer el valor seleccionado (clave o "Todos")
-# aglomerado_seleccionado = aglomerado_nombre_seleccionado[1]
-
-
-
-# # Filtrar la base
-# df_personas_filtrado = fe.filtrar_dataframe(df_personas, anio_seleccionado, trimestre_seleccionado, aglomerado_seleccionado)
-
-
-# # =======================================================
-from src.utils.Filtros_Streamlit import mostrar_sidebar_con_filtros
-
-# Usar la función para obtener el DataFrame filtrado y los valores seleccionados
-df_personas,df_personas_filtrado,df_filtrado_aglomerado ,df_filtrado_Ano4Trimestre = mostrar_sidebar_con_filtros()
-
-# =======================================================
-# =======================================================
 # Incisos 
-# ======================================================= 
+# =======================================================
 # --- 1.5.1 Cantidad de desocupados por nivel educativo ---
 st.subheader("1.5.1 Desocupados por nivel educativo")
 # Calcular cantidad de desocupados según estudios alcanzados

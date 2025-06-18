@@ -52,21 +52,25 @@ def filtrar_dataframe(df, anio, trimestre, aglomerado):
 
     return df_filtrado,df_filtrado_aglomerado ,df_filtrado_Ano4Trimestre
 
-def mostrar_sidebar_con_filtros():
-    # Cargar archivo
-    archivo_personas_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
+
+    # # Cargar archivo
+    # archivo_personas_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
+
+
+
+def mostrar_sidebar_con_filtros(path):
 
     try:
-        df_personas = pd.read_csv(archivo_personas_path, encoding="utf-8", low_memory=False)
-        st.sidebar.success(f"Archivo cargado correctamente. Filas: {len(df_personas)}")
+        df = pd.read_csv(path, encoding="utf-8", low_memory=False)
+        st.sidebar.success(f"Archivo cargado correctamente. Filas: {len(df)}")
     except Exception as e:
         st.sidebar.error(f"No se pudo cargar el archivo: {e}")
         return None, None, None, None
 
     # Diccionario Año → Trimestres
     anios_trimestres = {}
-    for anio in sorted(df_personas["ANO4"].dropna().unique()):
-        trimestres = sorted(df_personas[df_personas["ANO4"] == anio]["TRIMESTRE"].dropna().unique())
+    for anio in sorted(df["ANO4"].dropna().unique()):
+        trimestres = sorted(df[df["ANO4"] == anio]["TRIMESTRE"].dropna().unique())
         anios_trimestres[anio] = trimestres
 
     # Selectboxes
@@ -87,6 +91,6 @@ def mostrar_sidebar_con_filtros():
     aglomerado_seleccionado = aglomerado_nombre_seleccionado[1]
 
     # Filtrado
-    df_filtrado,df_filtrado_aglomerado ,df_filtrado_Ano4Trimestre = filtrar_dataframe(df_personas, anio_seleccionado, trimestre_seleccionado, aglomerado_seleccionado)
+    df_filtrado,df_filtrado_aglomerado ,df_filtrado_Ano4Trimestre = filtrar_dataframe(df, anio_seleccionado, trimestre_seleccionado, aglomerado_seleccionado)
 
-    return df_personas, df_filtrado,df_filtrado_aglomerado ,df_filtrado_Ano4Trimestre
+    return df, df_filtrado,df_filtrado_aglomerado ,df_filtrado_Ano4Trimestre
