@@ -7,7 +7,6 @@ import pandas as pd
 import sys
 import os
 from streamlit_folium import st_folium
-# import plotly.express as px
 import matplotlib.pyplot as plt
 
 # =======================================================
@@ -25,11 +24,11 @@ En esta sección se visualizará información relacionada a la actividad y emple
 
 archivo_personas_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
 
-try:
-    df_personas = pd.read_csv(archivo_personas_path, encoding="utf-8", low_memory=False)
-    st.success(f"Archivo cargado correctamente. Filas: {len(df_personas)}")
-except Exception as e:
-    st.error(f"No se pudo cargar el archivo: {e}")
+# try:
+#     df_personas = pd.read_csv(archivo_personas_path, encoding="utf-8", low_memory=False)
+#     st.success(f"Archivo cargado correctamente. Filas: {len(df_personas)}")
+# except Exception as e:
+#     st.error(f"No se pudo cargar el archivo: {e}")
 
 # =======================================================
 # Filtros
@@ -45,44 +44,52 @@ except Exception as e:
 # trimestre_seleccionado = st.selectbox("Seleccione un trimestre", options=trimestres)
 # aglomerado_seleccionado = st.selectbox("Seleccione un aglomerado (opcional)", options=["Todos"] + aglomerados)
 
-anios_trimestres = {}
-for anio in sorted(df_personas["ANO4"].dropna().unique()):
-    trimestres = sorted(df_personas[df_personas["ANO4"] == anio]["TRIMESTRE"].dropna().unique())
-    anios_trimestres[anio] = trimestres
+# anios_trimestres = {}
+# for anio in sorted(df_personas["ANO4"].dropna().unique()):
+#     trimestres = sorted(df_personas[df_personas["ANO4"] == anio]["TRIMESTRE"].dropna().unique())
+#     anios_trimestres[anio] = trimestres
 
-# Selectbox para año (usa las claves del diccionario)
-anio_seleccionado = st.selectbox("Seleccione un año", options=list(anios_trimestres.keys()))
+# # Selectbox para año (usa las claves del diccionario)
+# anio_seleccionado = st.selectbox("Seleccione un año", options=list(anios_trimestres.keys()))
 
-# Selectbox para trimestre (usa los valores asociados a la clave seleccionada)
-trimestres_disponibles = anios_trimestres[anio_seleccionado]
-trimestre_seleccionado = st.selectbox("Seleccione un trimestre", options=trimestres_disponibles)
+# # Selectbox para trimestre (usa los valores asociados a la clave seleccionada)
+# trimestres_disponibles = anios_trimestres[anio_seleccionado]
+# trimestre_seleccionado = st.selectbox("Seleccione un trimestre", options=trimestres_disponibles)
 
-# Aglomerados (independiente del año/trimestre)
+# # Aglomerados (independiente del año/trimestre)
 
-## Opcion 1 simple, pero solo aparecen numero de agloemrados
-# aglomerados = sorted(df_personas["AGLOMERADO"].dropna().unique().tolist())
-# aglomerado_seleccionado = st.selectbox("Seleccione un aglomerado (opcional)", options=["Todos"] + aglomerados)
+# ## Opcion 1 simple, pero solo aparecen numero de agloemrados
+# # aglomerados = sorted(df_personas["AGLOMERADO"].dropna().unique().tolist())
+# # aglomerado_seleccionado = st.selectbox("Seleccione un aglomerado (opcional)", options=["Todos"] + aglomerados)
 
-## Opcion 2 simple, pero con nombres de aglomerados
-aglomerados_dict = fe.cargar_aglomerados_coordenadas()
-### Crear una lista de tuplas (nombre, código) para mostrar los nombres, pero conservar la clave
-opciones_aglomerados = [("Todos", "Todos")] + [
-    (info["nombre"], codigo) for codigo, info in sorted(aglomerados_dict.items())
-]
-### Mostrar el selectbox con los nombres visibles
-aglomerado_nombre_seleccionado = st.selectbox(
-    "Seleccione un aglomerado (opcional)",
-    options=opciones_aglomerados,
-    format_func=lambda x: x[0]  # Muestra el nombre del aglomerado
-)
-### Extraer el valor seleccionado (clave o "Todos")
-aglomerado_seleccionado = aglomerado_nombre_seleccionado[1]
+# ## Opcion 2 simple, pero con nombres de aglomerados
+# aglomerados_dict = fe.cargar_aglomerados_coordenadas()
+# ### Crear una lista de tuplas (nombre, código) para mostrar los nombres, pero conservar la clave
+# opciones_aglomerados = [("Todos", "Todos")] + [
+#     (info["nombre"], codigo) for codigo, info in sorted(aglomerados_dict.items())
+# ]
+# ### Mostrar el selectbox con los nombres visibles
+# aglomerado_nombre_seleccionado = st.selectbox(
+#     "Seleccione un aglomerado (opcional)",
+#     options=opciones_aglomerados,
+#     format_func=lambda x: x[0]  # Muestra el nombre del aglomerado
+# )
+# ### Extraer el valor seleccionado (clave o "Todos")
+# aglomerado_seleccionado = aglomerado_nombre_seleccionado[1]
 
 
 
-# Filtrar la base
-df_personas_filtrado = fe.filtrar_dataframe(df_personas, anio_seleccionado, trimestre_seleccionado, aglomerado_seleccionado)
+# # Filtrar la base
+# df_personas_filtrado = fe.filtrar_dataframe(df_personas, anio_seleccionado, trimestre_seleccionado, aglomerado_seleccionado)
 
+
+# # =======================================================
+from src.utils.Filtros_Streamlit import mostrar_sidebar_con_filtros
+
+# Usar la función para obtener el DataFrame filtrado y los valores seleccionados
+df_personas,df_personas_filtrado,df_filtrado_aglomerado ,df_filtrado_Ano4Trimestre = mostrar_sidebar_con_filtros()
+
+# =======================================================
 # =======================================================
 # Incisos 
 # ======================================================= 
@@ -139,7 +146,7 @@ st.pyplot(fig1)
 # --- 1.5.4 Porcentaje de empleo estatal, privado y otro por aglomerado ---
 st.subheader("1.5.4 Porcentaje de empleo estatal, privado y otro por aglomerado")
 # Aquí va el código para calcular y mostrar los porcentajes por aglomerado
-tabla_empleoEstatalPrivado = fe.obtener_tabla_empleo_con_nombresAglomeardo(df_personas)
+tabla_empleoEstatalPrivado = fe.obtener_tabla_empleo_con_nombresAglomeardo(df_filtrado_Ano4Trimestre)
 st.dataframe(tabla_empleoEstatalPrivado, use_container_width=True)
 
 def graficar_empleo_por_aglomerado(df):
