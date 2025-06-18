@@ -9,7 +9,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 st.title("1.7 (P7) Ingresos")
-
+st.header("Datos y estadisticas sobre el ingreso ")
+st.subheader("Personas dentro de la pobreza, indigencia, no pobreza y valores desconocidos")
 # Abrir el archivo y seleccionar años y trimestres 
 
 archivo = DATA_CLEAN_PATH / "usu_clean_hogar.csv"
@@ -51,24 +52,40 @@ cb_selec_prom = pd.DataFrame([promedios])
 
 def comprobar_promedio(valor): 
     if pd.isna(valor) or valor == 0: 
-        return "desconocido"
+        return "Desconocido"
     elif valor <= cb_selec_prom["prom_indigencia"].iloc[0]:
-        return "indigencia"
+        return "Indigencia"
     elif valor <= cb_selec_prom["prom_pobreza"].iloc[0]:
-        return "pobreza"
+        return "Pobreza"
     else: 
-        return "no pobre"
+        return "Clase media"
     
 hogares_4_df["estado"] = hogares_4_df["ITF"].apply(comprobar_promedio)
+hogares_s_desc = hogares_4_df[hogares_4_df["estado"] != "Desconocido"]
+
 hogares_final = hogares_4_df[["estado","PONDERA"]].groupby(["estado"]).sum("PONDERA")
+hogares_s_desc = hogares_s_desc[["estado","PONDERA"]].groupby(["estado"]).sum("PONDERA")
 
 hogares_final = hogares_final.reset_index()
-
+hogares_s_desc = hogares_s_desc.reset_index()
 
 fig, ax = plt.subplots()
 ax.pie(
     hogares_final["PONDERA"],
     labels=hogares_final["estado"],
+    autopct="%1.1f%%",
+    startangle=90
+)
+ax.axis("equal") 
+st.pyplot(fig)
+st.write("valores desconocidos son valores que eran 0 o nulos ")
+st.header("Descartando a los valores desconocidos")
+
+
+fig, ax = plt.subplots()
+ax.pie(
+    hogares_s_desc["PONDERA"],
+    labels=hogares_s_desc["estado"],
     autopct="%1.1f%%",
     startangle=90
 )
