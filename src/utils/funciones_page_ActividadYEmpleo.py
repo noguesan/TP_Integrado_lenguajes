@@ -1,7 +1,4 @@
-import streamlit as st
-import csv
 import pandas as pd
-import sys
 import os
 import folium
 import json
@@ -101,7 +98,10 @@ def cargar_aglomerados_coordenadas():
 
     # Abrir y leer el archivo
     with open(json_path, "r", encoding="utf-8") as f:
-        aglomerados_dict = json.load(f)
+        aglomerados_dict_str = json.load(f)
+
+    # Convertir las claves del diccionario de str a int
+    aglomerados_dict = {int(k): v for k, v in aglomerados_dict_str.items()}    
 
     return aglomerados_dict
 
@@ -218,7 +218,7 @@ def obtener_tabla_empleo_con_nombresAglomeardo(df):
     aglomerados_dict = cargar_aglomerados_coordenadas()
 
     # Crear mapa para nombre del aglomerado
-    mapa_nombre = {int(k): v['nombre'] for k, v in aglomerados_dict.items()}
+    mapa_nombre = {k: v['nombre'] for k, v in aglomerados_dict.items()}
 
     # Asegurar que AGLOMERADO sea int
     tabla_empleo['AGLOMERADO'] = tabla_empleo['AGLOMERADO'].astype(int)
@@ -389,9 +389,9 @@ def agregar_coordenadas_a_tasas(df_empleo, df_desempleo):
     aglomerados_dict = cargar_aglomerados_coordenadas()
 
     # Crear mapas desde el diccionario
-    mapa_lat = {int(k): v['coordenadas'][0] for k, v in aglomerados_dict.items()}
-    mapa_lon = {int(k): v['coordenadas'][1] for k, v in aglomerados_dict.items()}
-    mapa_nombre = {int(k): v['nombre'] for k, v in aglomerados_dict.items()}
+    mapa_lat = {k: v['coordenadas'][0] for k, v in aglomerados_dict.items()}
+    mapa_lon = {k: v['coordenadas'][1] for k, v in aglomerados_dict.items()}
+    mapa_nombre = {k: v['nombre'] for k, v in aglomerados_dict.items()}
 
     # Asegurar que AGLOMERADO sea int
     df_empleo['AGLOMERADO'] = df_empleo['AGLOMERADO'].astype(int)

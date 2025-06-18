@@ -3,11 +3,9 @@
 # =======================================================
 
 import streamlit as st
-import csv
 import pandas as pd
 import sys
 import os
-import folium
 from streamlit_folium import st_folium
 # import plotly.express as px
 import matplotlib.pyplot as plt
@@ -37,21 +35,53 @@ except Exception as e:
 # Filtros
 # ======================================================= 
 
-## enlistar valores unicos en el dataFrame
-anios = sorted(df_personas["ANO4"].dropna().unique().tolist())
-trimestres = sorted(df_personas["TRIMESTRE"].dropna().unique().tolist())
-aglomerados = sorted(df_personas["AGLOMERADO"].dropna().unique().tolist())
+# ## enlistar valores unicos en el dataFrame
+# anios = sorted(df_personas["ANO4"].dropna().unique().tolist())
+# trimestres = sorted(df_personas["TRIMESTRE"].dropna().unique().tolist())
+# aglomerados = sorted(df_personas["AGLOMERADO"].dropna().unique().tolist())
 
-## SelectBox con las opciones
-anio_seleccionado = st.selectbox("Seleccione un año", options=anios)
-trimestre_seleccionado = st.selectbox("Seleccione un trimestre", options=trimestres)
-aglomerado_seleccionado = st.selectbox("Seleccione un aglomerado (opcional)", options=["Todos"] + aglomerados)
+# ## SelectBox con las opciones
+# anio_seleccionado = st.selectbox("Seleccione un año", options=anios)
+# trimestre_seleccionado = st.selectbox("Seleccione un trimestre", options=trimestres)
+# aglomerado_seleccionado = st.selectbox("Seleccione un aglomerado (opcional)", options=["Todos"] + aglomerados)
+
+anios_trimestres = {}
+for anio in sorted(df_personas["ANO4"].dropna().unique()):
+    trimestres = sorted(df_personas[df_personas["ANO4"] == anio]["TRIMESTRE"].dropna().unique())
+    anios_trimestres[anio] = trimestres
+
+# Selectbox para año (usa las claves del diccionario)
+anio_seleccionado = st.selectbox("Seleccione un año", options=list(anios_trimestres.keys()))
+
+# Selectbox para trimestre (usa los valores asociados a la clave seleccionada)
+trimestres_disponibles = anios_trimestres[anio_seleccionado]
+trimestre_seleccionado = st.selectbox("Seleccione un trimestre", options=trimestres_disponibles)
+
+# Aglomerados (independiente del año/trimestre)
+
+## Opcion 1 simple, pero solo aparecen numero de agloemrados
+# aglomerados = sorted(df_personas["AGLOMERADO"].dropna().unique().tolist())
+# aglomerado_seleccionado = st.selectbox("Seleccione un aglomerado (opcional)", options=["Todos"] + aglomerados)
+
+## Opcion 2 simple, pero con nombres de aglomerados
+aglomerados_dict = fe.cargar_aglomerados_coordenadas()
+### Crear una lista de tuplas (nombre, código) para mostrar los nombres, pero conservar la clave
+opciones_aglomerados = [("Todos", "Todos")] + [
+    (info["nombre"], codigo) for codigo, info in sorted(aglomerados_dict.items())
+]
+### Mostrar el selectbox con los nombres visibles
+aglomerado_nombre_seleccionado = st.selectbox(
+    "Seleccione un aglomerado (opcional)",
+    options=opciones_aglomerados,
+    format_func=lambda x: x[0]  # Muestra el nombre del aglomerado
+)
+### Extraer el valor seleccionado (clave o "Todos")
+aglomerado_seleccionado = aglomerado_nombre_seleccionado[1]
+
+
 
 # Filtrar la base
 df_personas_filtrado = fe.filtrar_dataframe(df_personas, anio_seleccionado, trimestre_seleccionado, aglomerado_seleccionado)
-#df_personas_filtrado_anoTrimestre = fe.filtrar_dataframe(df_personas, anio_seleccionado, trimestre_seleccionado, "Todos")
-# df_filtrado_Aglomerado = df[(df['AGLOMERADO'] == 2)].copy()
-# df_filtrado_AglomeradoAnoTrim = df[(df['ANO4'] == 2024) & (df['TRIMESTRE'] == 1) & (df['AGLOMERADO'] == 2)].copy()
 
 # =======================================================
 # Incisos 
