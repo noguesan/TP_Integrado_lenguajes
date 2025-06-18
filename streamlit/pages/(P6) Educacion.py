@@ -11,7 +11,7 @@ st.subheader("Cantidad de personas según el máximo nivel educativo alcanzado")
 df = pd.read_csv("data/clean/usu_clean_individual.csv")
 df_hogar = pd.read_csv("data/clean/usu_clean_hogar.csv")
 
-# --- QUEDARSE SOLO CON EL ÚLTIMO TRIMESTRE DE CADA AÑO ---
+# QUEDARSE SOLO CON EL ÚLTIMO TRIMESTRE DE CADA AÑO 
 ultimos_trimestres = df.groupby('ANO4')['TRIMESTRE'].max().reset_index()
 df = df.merge(ultimos_trimestres, on=['ANO4', 'TRIMESTRE'])
 
@@ -72,9 +72,9 @@ for nombre, edad_min, edad_max in grupos:
     if nombre not in seleccionados:
         continue
     if nombre == "60+":
-        df_grupo = df[df['CH06'].astype(int) >= edad_min]
+        df_grupo = df[df['CH06'] >= edad_min]
     else:
-        df_grupo = df[(df['CH06'].astype(int) >= edad_min) & (df['CH06'].astype(int) < edad_max)]
+        df_grupo = df[(df['CH06'] >= edad_min) & (df['CH06'] < edad_max)]
     if not df_grupo.empty:
         # Agrupar por nivel educativo y sumar la ponderación
         nivel_ponderado = df_grupo.groupby('CH12')['PONDERA'].sum()
@@ -149,17 +149,19 @@ def calcular_ranking(ultimos_individuos, ultimos_hogares):
 df_individuos = pd.read_csv("data/clean/usu_clean_individual.csv", dtype=str)
 df_hogares = pd.read_csv("data/clean/usu_clean_hogar.csv", dtype=str)
 
-# Selectores de año y trimestre
+# Selector de año
 anios = sorted(df_individuos["ANO4"].astype(int).unique())
-trimestres = sorted(df_individuos["TRIMESTRE"].astype(int).unique())
-
 anio = st.selectbox("Elegí el año", anios)
-trimestre = st.selectbox("Elegí el trimestre", trimestres)
+
+# Selector de trimestre: solo los disponibles para el año elegido
+trimestres_disponibles = sorted(df_individuos[df_individuos["ANO4"].astype(int) == anio]["TRIMESTRE"].astype(int).unique())
+trimestre = st.selectbox("Elegí el trimestre", trimestres_disponibles)
 
 # Filtrado según selección
-individuos = df_individuos[(df_individuos["ANO4"].astype(int) == anio) & (df_individuos["TRIMESTRE"].astype(int) == trimestre)]
-hogares = df_hogares[(df_hogares["ANO4"].astype(int) == anio) & (df_hogares["TRIMESTRE"].astype(int) == trimestre)]
-
+individuos = df_individuos[(df_individuos["ANO4"].astype(int) == anio) & (df_individuos["TRIMESTRE"].astype(int) == trimestre)
+]
+hogares = df_hogares[(df_hogares["ANO4"].astype(int) == anio) & (df_hogares["TRIMESTRE"].astype(int) == trimestre)
+]
 ultimos_individuos = individuos.values.tolist()
 ultimos_hogares = hogares.values.tolist()
 
@@ -181,15 +183,15 @@ st.subheader("Porcentaje de personas mayores a 6 años capaces e incapaces de le
 resultados_lectoescritura = []
 
 for anio in sorted(df['ANO4'].unique()):
-    df_anio = df[(df['ANO4'] == anio) & (df['CH06'] > 6)]
-    total = len(df_anio)
+    df_anio = df[(df['ANO4'] == anio) & (df['CH06'].astype(int) > 6)]
+    total = df_anio['PONDERA'].sum()
     if total == 0:
         capaces = incapaces = 0
     else:
-        capaces = (df_anio['CH09'] == 1).sum() / total * 100
-        incapaces = (df_anio['CH09'] == 2).sum() / total * 100
+        capaces = df_anio[df_anio['CH09'] == 1]['PONDERA'].sum() / total * 100
+        incapaces = df_anio[df_anio['CH09'] == 2]['PONDERA'].sum() / total * 100
     resultados_lectoescritura.append([anio, round(capaces, 2), round(incapaces, 2)])
 
 tabla_lectoescritura = pd.DataFrame(resultados_lectoescritura, columns=["Año", "% Capaces de leer y escribir", "% Incapaces de leer y escribir"])
 st.dataframe(tabla_lectoescritura)
-st.bar_chart(tabla_lectoescritura[["% Capaces de leer y escribir","% Incapaces de leer y escribir"]],stack=False)
+st.bar_chart(tabla_lectoescritura.set_index("Año")[["% Capaces de leer y escribir","% Incapaces de leer y escribir"]],stack=False)
