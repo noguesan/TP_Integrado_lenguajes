@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 
 st.title("Educacion")
 
-st.title("1.6 (P6) Educacion")
-
+# --- Punto 1.6.1 : Cantidad de personas según el máximo nivel educativo alcanzado
 st.subheader("Cantidad de personas según el máximo nivel educativo alcanzado")
 
 # Cargar el dataset limpio
@@ -23,23 +22,42 @@ anio = st.selectbox("Seleccione un año", anios_disponibles)
 # Filtrar por año
 df_anio = df[df['ANO4'] == anio]
 
-# --- Punto 1.6.1: Cantidad de personas por nivel educativo (ponderada) ---
-st.subheader("Distribución general por nivel educativo")
+# Diccionario de niveles educativos
+niveles = {
+    "0": "Sin información",
+    "1": "Jardín/preescolar",
+    "2": "Primario",
+    "3": "EGB",
+    "4": "Secundario",
+    "5": "Polimodal",
+    "6": "Terciario",
+    "7": "Universitario",
+    "8": "Posgrado universitario",
+    "9": "Educación especial",
+    "99": "Sin información"
+}
 
-conteo_ponderado = df_anio.groupby('NIVEL_ED_str')['PONDERA'].sum().reset_index()
-conteo_ponderado.columns = ['Nivel educativo Maximo', 'Cantidad de personas']
+# Agrupar y sumar ponderación
+conteo_ponderado = df_anio.groupby('CH12')['PONDERA'].sum().reset_index()
+
+# Reemplazar códigos por nombres descriptivos
+conteo_ponderado['Nivel educativo'] = conteo_ponderado['CH12'].astype(str).map(niveles)
+conteo_ponderado = conteo_ponderado[['Nivel educativo', 'PONDERA']]
+conteo_ponderado.columns = ['Nivel educativo', 'Cantidad de personas']
+
+# Mostrar tabla y gráfico
+st.subheader("Distribución general por nivel educativo (ponderada)")
 st.dataframe(conteo_ponderado)
-st.bar_chart(conteo_ponderado.set_index('Nivel educativo Maximo'))
-
+st.bar_chart(conteo_ponderado.set_index('Nivel educativo'))
 
 # --- Punto 1.6.2: Nivel educacional más común por grupo etario 
-st.subheader("Nivel educacional más común por grupo etario")
+st.subheader("Nivel educacional maximo más común por grupo etario")
 
 grupos = [
-    ("20-30", 20, 30),
-    ("30-40", 30, 40),
-    ("40-50", 40, 50),
-    ("50-60", 50, 60),
+    ("20-30", 20, 29),
+    ("30-40", 30, 39),
+    ("40-50", 40, 49),
+    ("50-60", 50, 59),
     ("60+", 60, 200)
 ]
 opciones = [g[0] for g in grupos]
@@ -54,21 +72,23 @@ for nombre, edad_min, edad_max in grupos:
     if nombre not in seleccionados:
         continue
     if nombre == "60+":
-        df_grupo = df[df['CH06'] >= edad_min]
+        df_grupo = df[df['CH06'].astype(int) >= edad_min]
     else:
-        df_grupo = df[(df['CH06'] >= edad_min) & (df['CH06'] < edad_max)]
+        df_grupo = df[(df['CH06'].astype(int) >= edad_min) & (df['CH06'].astype(int) < edad_max)]
     if not df_grupo.empty:
         # Agrupar por nivel educativo y sumar la ponderación
-        nivel_ponderado = df_grupo.groupby('NIVEL_ED_str')['PONDERA'].sum()
+        nivel_ponderado = df_grupo.groupby('CH12')['PONDERA'].sum()
         nivel_comun = nivel_ponderado.idxmax()
         cantidad = nivel_ponderado.max()
-        resultados.append([nombre, nivel_comun, int(cantidad)])
+        # Mapear el código al nombre
+        nombre_nivel = niveles.get(str(nivel_comun), "Sin información")
+        resultados.append([nombre, nombre_nivel, int(cantidad)])
     else:
         resultados.append([nombre, "Sin datos", 0])
 
-tabla_resultados = pd.DataFrame(resultados, columns=["Grupo de edad", "Nivel educativo más común", "Cantidad de personas (ponderada)"])
+tabla_resultados = pd.DataFrame(resultados, columns=["Grupo de edad", "Nivel educativo maximo más común", "Cantidad de personas (ponderada)"])
 st.dataframe(tabla_resultados)
-st.bar_chart(tabla_resultados.set_index("Grupo de edad")["Cantidad de personas (ponderada)"])
+
 
 # --- Punto 1.6.3: Ranking y exportación 
 st.subheader("Ranking de los 5 aglomerados con mayor porcentaje de hogares con 2+ ocupantes con estudios universitarios o superiores finalizados")
