@@ -1,3 +1,7 @@
+# =======================================================
+# Librerias
+# =======================================================
+
 import streamlit as st
 import csv
 import pandas as pd
@@ -5,6 +9,12 @@ import sys
 import os
 import folium
 from streamlit_folium import st_folium
+# import plotly.express as px
+import matplotlib.pyplot as plt
+
+# =======================================================
+# Cargar datos de personas
+# =======================================================
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from src.utils.constantes import DATA_CLEAN_PATH
@@ -15,7 +25,6 @@ st.write("""
 En esta sección se visualizará información relacionada a la actividad y empleo según la EPH.
 """)
 
-# --- Cargar datos de personas ---
 archivo_personas_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
 
 try:
@@ -24,7 +33,10 @@ try:
 except Exception as e:
     st.error(f"No se pudo cargar el archivo: {e}")
 
-# --- Filtros ---
+# =======================================================
+# Filtros
+# ======================================================= 
+
 ## enlistar valores unicos en el dataFrame
 anios = sorted(df_personas["ANO4"].dropna().unique().tolist())
 trimestres = sorted(df_personas["TRIMESTRE"].dropna().unique().tolist())
@@ -41,26 +53,110 @@ df_personas_filtrado = fe.filtrar_dataframe(df_personas, anio_seleccionado, trim
 # df_filtrado_Aglomerado = df[(df['AGLOMERADO'] == 2)].copy()
 # df_filtrado_AglomeradoAnoTrim = df[(df['ANO4'] == 2024) & (df['TRIMESTRE'] == 1) & (df['AGLOMERADO'] == 2)].copy()
 
-################# 
+# =======================================================
+# Incisos 
+# ======================================================= 
 # --- 1.5.1 Cantidad de desocupados por nivel educativo ---
 st.subheader("1.5.1 Desocupados por nivel educativo")
-# Aquí va el código para filtrar y mostrar la cantidad de desocupados según estudios alcanzados
+# Calcular cantidad de desocupados según estudios alcanzados
 tabla_EstadoNivel_ED = fe.resumen_nivel_educativo(df_personas_filtrado)
+# Aplicar resaltado a la columna 'Desocupados'
+tabla_EstadoNivel_ED_resaltada = fe.resaltar_columnas(tabla_EstadoNivel_ED, 'Desocupado')
+# Imprimir tabla
 st.subheader("Resumen por Nivel Educativo y Condición de Actividad")
-st.dataframe(tabla_EstadoNivel_ED, use_container_width=True)
+st.dataframe(tabla_EstadoNivel_ED_resaltada, use_container_width=True)
 
+# Crear gráfico
+df_para_graficar = tabla_EstadoNivel_ED.reset_index()
+
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.barh(
+    df_para_graficar['NIVEL_ED_DESC'], 
+    df_para_graficar['Desocupado'], 
+    color='orange'
+)
+ax.set_xlabel('Cantidad de desocupados')
+ax.set_title('Desocupados por nivel educativo')
+plt.tight_layout()
+
+# Mostrar en Streamlit
+st.pyplot(fig)
+
+# =======================================================
 # --- 1.5.2 Evolución de la tasa de desempleo y 1.5.3 Evolución de la tasa de empleo ---
 st.subheader("1.5.2 Evolución de la tasa de desempleo y 1.5.3 Evolución de la tasa de empleo")
-# Aquí va el código para calcular y graficar la evolución de la tasa de desempleo y empleo
+# Calcular evolución de la tasa de desempleo y empleo
 tabla_tasas = fe.evolucion_tasas(df_personas)
-st.dataframe(tabla_tasas, use_container_width=True)
+# Aplicar resaltado a la columna 'Desocupados'
+tabla_tasas_resaltada = fe.resaltar_columnas(tabla_tasas, ['Tasa de Desempleo (%)', 'Tasa de Empleo (%)'])
+# Imprimir tabla
+st.dataframe(tabla_tasas_resaltada, use_container_width=True)
 
+# Grafico:
+# Crear columna de periodo
+#tabla_tasas['Periodo'] = + 'Año: ' + tabla_tasas['ANO4'].astype(str) + ' Trimestre: ' + tabla_tasas['TRIMESTRE'].astype(str)
+tabla_tasas['Periodo'] = '!=|A' +tabla_tasas['ANO4'].astype(str) + ' T' + tabla_tasas['TRIMESTRE'].astype(str)
+
+fig1, ax1 = plt.subplots()
+ax1.plot(tabla_tasas['Periodo'], tabla_tasas['Tasa de Empleo (%)'], marker='o', color='green')
+ax1.set_title('Evolución de la Tasa de Empleo')
+ax1.set_xlabel('Periodo')
+ax1.set_ylabel('Tasa de Empleo (%)')
+ax1.grid(True)
+st.pyplot(fig1)
+
+# =======================================================
 # --- 1.5.4 Porcentaje de empleo estatal, privado y otro por aglomerado ---
 st.subheader("1.5.4 Porcentaje de empleo estatal, privado y otro por aglomerado")
 # Aquí va el código para calcular y mostrar los porcentajes por aglomerado
-tabla_empleoEstatalPrivado = fe.calcular_empleo_por_aglomerado(df_personas)
+tabla_empleoEstatalPrivado = fe.obtener_tabla_empleo_con_nombresAglomeardo(df_personas)
 st.dataframe(tabla_empleoEstatalPrivado, use_container_width=True)
 
+def graficar_empleo_por_aglomerado(df):
+    """
+    Genera un gráfico de barras apiladas con % Estatal, % Privado y % Otro para cada aglomerado.
+    
+    Parámetros:
+    - df: DataFrame que contiene las columnas:
+        - 'nombre_aglomerado'
+        - '% Estatal'
+        - '% Privado'
+        - '% Otro'
+    """
+
+    # Ordenar por Total Ocupados si existe la columna
+    if 'Total Ocupados' in df.columns:
+        df = df.sort_values(by='Total Ocupados', ascending=False)
+
+    # Etiquetas (eje X) y valores (alturas)
+    labels = df['nombre_aglomerado']
+    estatal = df['% Estatal']
+    privado = df['% Privado']
+    otro = df['% Otro']
+
+    # Crear figura
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Graficar barras apiladas
+    ax.bar(labels, estatal, label='% Estatal', color='#ffcc99')
+    ax.bar(labels, privado, bottom=estatal, label='% Privado', color='#99ccff')
+    ax.bar(labels, otro, bottom=estatal + privado, label='% Otro', color='#cccccc')
+
+    # Estética
+    ax.set_ylabel('% del total de ocupados')
+    ax.set_title('Distribución porcentual del empleo por aglomerado')
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, rotation=45, ha='right')
+    ax.legend()
+
+    plt.tight_layout()
+
+    # Mostrar en Streamlit
+    st.pyplot(fig)
+
+graficar_empleo_por_aglomerado(tabla_empleoEstatalPrivado)
+
+# =======================================================
 # --- 1.5.5 Mapa de evolución de tasas por aglomerado ---
 st.subheader("1.5.5 Mapa de evolución de tasas por aglomerado")
 
@@ -70,7 +166,6 @@ st.subheader("1.5.5 Mapa de evolución de tasas por aglomerado")
 ## 3. Mostrar mapas
 ## 4. Botoneras para seleccionar los mapas
 ## ** Hay partes solo comentadas ya que sirven para ver que todo funcione adecuamente pero no se desea mostrarlas en la pagina
-
 
 ## 1 porcentajes y mostrar el mapa con puntos verdes/rojos según corresponda
 df_comparacion_empleo, df_comparacion_desempleo = fe.evolucion_tasas_aglomerados(df_personas)
@@ -106,10 +201,8 @@ df_comparacion_empleo, df_comparacion_desempleo = fe.agregar_coordenadas_a_tasas
 # st_folium(mapa_desempleo, width=700, height=500)
 
 
-
-
 ## 4. Botoneras para seleccionar los mapas
-## ** No funciona si esta el pasi 3 activado
+## ** No funciona si esta el paso "3. Mostrar mapas" activado
 
 st.subheader("Mapas de evolución de tasas")
 

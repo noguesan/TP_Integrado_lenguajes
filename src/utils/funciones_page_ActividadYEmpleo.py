@@ -89,45 +89,21 @@ def resaltar_columnas(tabla, columnas, color = '#ffeeba'):
         }
     )
 
+def cargar_aglomerados_coordenadas():
+    """
+    Carga un diccionario con las coordenadas de los aglomerados desde un archivo JSON.
 
-# def calcular_estado_por_aglomerado(df):
-#     """
-#     Calcula por aglomerado la cantidad de Ocupados, Desocupados, Inactivos
-#     y el total de personas (sin incluir 'No respondió' ni 'Menor de 10 años').
-#     """
-#     # Filtrar registros válidos (excluye 0 = No respondió y 4 = Menor de 10 años)
-#     df_filtrado = df[df['ESTADO'].isin([1, 2, 3])].copy()
+    Retorna:
+        dict: Diccionario con los datos de aglomerados y sus coordenadas.
+    """
+    # Ruta relativa desde src/utils hacia la raíz del proyecto
+    json_path = os.path.abspath(os.path.join(os.getcwd(), "aglomerados_coordenadas.json"))
 
-#     # Agrupar por AGLOMERADO y ESTADO, sumando ponderadores
-#     resumen = df_filtrado.groupby(['AGLOMERADO', 'ESTADO'])['PONDERA'].sum().unstack(fill_value=0)
+    # Abrir y leer el archivo
+    with open(json_path, "r", encoding="utf-8") as f:
+        aglomerados_dict = json.load(f)
 
-#     # Renombrar columnas según estado
-#     resumen = resumen.rename(columns={
-#         1: 'Ocupado',
-#         2: 'Desocupado',
-#         3: 'Inactivo'
-#     })
-
-#     # Asegurar que todas las columnas estén presentes
-#     for col in ['Ocupado', 'Desocupado', 'Inactivo']:
-#         if col not in resumen.columns:
-#             resumen[col] = 0
-
-#     # Calcular el total
-#     resumen['Total'] = resumen[['Ocupado', 'Desocupado', 'Inactivo']].sum(axis=1)
-
-#     # Reemplazar los códigos de aglomerado por su nombre
-#     # Construir diccionario de nombres
-#     aglomerado_nombres = {int(k): v["nombre"] for k, v in aglomerados_dict.items()}
-#     resumen.index = resumen.index.map(aglomerado_nombres)
-
-#     # Resetear el índice sin cambiar el nombre de la columna
-#     resumen = resumen.reset_index()
-
-#     # Ordenar por nombre de aglomerado
-#     resumen = resumen.sort_values('AGLOMERADO')
-
-#     return resumen
+    return aglomerados_dict
 
 
 # FUNCIONES
@@ -230,6 +206,37 @@ def calcular_empleo_por_aglomerado(df):
     tabla['% Otro'] = 100 * tabla['Otro'] / tabla['Total Ocupados']
     
     return tabla[['AGLOMERADO', 'Total Ocupados', '% Estatal', '% Privado', '% Otro']]
+
+def obtener_tabla_empleo_con_nombresAglomeardo(df):
+    """
+    Usa la funcion calcular_empleo_por_aglomerado pero le agrega los nombres de los aglomerados
+    """
+    # Calcular resumen por aglomerado
+    tabla_empleo = calcular_empleo_por_aglomerado(df)
+
+    # Cargar coordenadas y nombres
+    aglomerados_dict = cargar_aglomerados_coordenadas()
+
+    # Crear mapa para nombre del aglomerado
+    mapa_nombre = {int(k): v['nombre'] for k, v in aglomerados_dict.items()}
+
+    # Asegurar que AGLOMERADO sea int
+    tabla_empleo['AGLOMERADO'] = tabla_empleo['AGLOMERADO'].astype(int)
+
+    # Agregar nombre del aglomerado
+    tabla_empleo['nombre_aglomerado'] = tabla_empleo['AGLOMERADO'].map(mapa_nombre)
+
+    # Reordenar y filtrar columnas
+    columnas_finales = [
+        'AGLOMERADO',
+        'nombre_aglomerado',
+        'Total Ocupados',
+        '% Estatal',
+        '% Privado',
+        '% Otro'
+    ]
+    return tabla_empleo[columnas_finales]
+
 
 # 1.5.5 Se debe obtener por aglomerado el porcentaje de la tasa de empleo y desempleo. Esta información se requiere conocer para el año y trimestre más antiguo del cual se contenga 
 # información y para el año y trimestre más actual del cual se cuenta información.
@@ -362,22 +369,6 @@ def evolucion_tasas_aglomerados(df):
     return df_comparacion_empleo, df_comparacion_desempleo
 
 ## 2- Cargar datos de coordenadas (archivos json) y poner las coordenadas en los dataframe
-
-def cargar_aglomerados_coordenadas():
-    """
-    Carga un diccionario con las coordenadas de los aglomerados desde un archivo JSON.
-
-    Retorna:
-        dict: Diccionario con los datos de aglomerados y sus coordenadas.
-    """
-    # Ruta relativa desde src/utils hacia la raíz del proyecto
-    json_path = os.path.abspath(os.path.join(os.getcwd(), "aglomerados_coordenadas.json"))
-
-    # Abrir y leer el archivo
-    with open(json_path, "r", encoding="utf-8") as f:
-        aglomerados_dict = json.load(f)
-
-    return aglomerados_dict
 
 def agregar_coordenadas_a_tasas(df_empleo, df_desempleo):
     """
