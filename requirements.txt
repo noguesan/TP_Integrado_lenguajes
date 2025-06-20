@@ -3,3 +3,5 @@ python 3.12.9
 streamlit
 pandas
 matplotlib
+folium
+
