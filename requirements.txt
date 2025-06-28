@@ -1,7 +1,4 @@
-python 3.12.9
-
-streamlit
-pandas
-matplotlib
-folium
-
+matplotlib==3.10.3
+pandas==2.2.3
+streamlit==1.44.1
+streamlit_folium==0.25.0
