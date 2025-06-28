@@ -9,7 +9,8 @@ Benavidez GRegorio
 Martins Thiago
 
 ## Uso de la aplicacion
-Para iniciar la aplicación se debe ejecutar streamlit run streamlit/Inicio.py
+Para iniciar la aplicación se debe ejecutar (**Importante:** Debes ejecutar el siguiente comando desde la **carpeta raíz del proyecto** ): 
+streamlit run streamlit/Inicio.py
 
 interfaz de la aplicacion:
 P1: Inicio: Contiene información general sobre la EPH y la aplicación.
@@ -17,11 +18,13 @@ P2: Carga de Datos: Muestra los datasets disponibles (actualmente con datos de 2
 P3: Búsqueda por Tema: Aquí puedes explorar diferentes temas de la EPH, aunque esta sección está en desarrollo.
 P4: Visualización: Presenta diferentes visualizaciones de los datos.
 
-## Instalación de Dependencias
+## Instalación
 python 3.12.9
 streamlit
 otras librerias (sys, os, csv, src)
 
+## Instalación de requirements
+pip install -r requirements.txt
 
 ## Estructura del Proyecto
 ```

@@ -21,23 +21,11 @@ st.subheader("Personas dentro de la pobreza, indigencia, no pobreza y valores de
 # # Abrir el archivo y seleccionar años y trimestres 
 
 archivo = DATA_CLEAN_PATH / "usu_clean_hogar.csv"
-# df = pd.read_csv(archivo, delimiter=",", low_memory=False)
 
-# anios = df["ANO4"].unique()
-# anio_selec = st.selectbox("seleccione el año a buscar", options= anios)
-# anio_selec_df = df[df["ANO4"] == anio_selec]
-
-# trimestres = anio_selec_df["TRIMESTRE"].unique()
-# trim_selec = st.selectbox("seleccione el trimestre a buscar", options= trimestres)
-
-# selec_df = anio_selec_df[anio_selec_df["TRIMESTRE"] == trim_selec] 
-# =====================================
 # Filtrado de la base de datos para los preprarar los dataframe necesarios
 df,selec_df,df_filtrado_aglomerado ,df_tri_anio_selec = mostrar_sidebar_con_filtros(archivo)
 
-# =====================================
 # --------------------------------------
-
 
 # Filtrar por hogares de 4 integrantes 
 

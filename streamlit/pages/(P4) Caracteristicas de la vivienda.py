@@ -11,26 +11,7 @@ st.title("1.4 (P4) Características de la vivienda")
 
 # --- Cargar datos de hogares usando pandas y DATA_CLEAN_PATH ---
 archivo_clean_path = DATA_CLEAN_PATH / "usu_clean_hogar.csv"
-#---------------------------------
-# df = pd.read_csv(archivo_clean_path, delimiter=",")
-# df['AGLOMERADO'] = df['AGLOMERADO'].astype(int).astype(str).str.zfill(2)  # <-- Línea clave
 
-# # --- Filtros de año y aglomerado ---
-# anios = sorted(df['ANO4'].astype(str).unique())
-# aglomerados = sorted(df['AGLOMERADO'].astype(str).unique())
-
-# anio_seleccionado = st.selectbox("Seleccione un año", options=["Todos"] + anios)
-# aglomerado_seleccionado = st.selectbox("Seleccione un aglomerado (opcional)", options=["Todos"] + aglomerados)
-
-# # --- Filtrado de datos según selección ---
-# df_filtrado = df.copy()
-# if anio_seleccionado != "Todos":
-#     df_filtrado = df_filtrado[df_filtrado['ANO4'].astype(str) == anio_seleccionado]
-# # Para los puntos 1.4.1, 1.4.2, 1.4.5 sí se filtra por aglomerado
-# df_filtrado_aglo = df_filtrado.copy()
-# if aglomerado_seleccionado != "Todos": 
-#     df_filtrado_aglo = df_filtrado_aglo[df_filtrado_aglo['AGLOMERADO'].astype(str) == aglomerado_seleccionado]
-# ### df_filtrado --> filtrado por anio y trimestre, df_filtrado_aglo todo el filtrado
 # # =====================================
 from src.utils.Filtros_Streamlit import mostrar_sidebar_con_filtros
 
@@ -38,11 +19,6 @@ from src.utils.Filtros_Streamlit import mostrar_sidebar_con_filtros
 df,df_filtrado_aglo,df_filtrado_Solo_aglomerado ,df_filtrado = mostrar_sidebar_con_filtros(archivo_clean_path)
 
 # =====================================
-
-
-
-#---------------------------------
-
 
 # 1.4.1 Cantidad total de viviendas 
 st.subheader("Cantidad total de viviendas ")

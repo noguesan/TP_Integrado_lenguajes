@@ -139,11 +139,6 @@ graficar_empleo_por_aglomerado(tabla_empleoEstatalPrivado)
 st.subheader("1.5.5 Mapa de evolución de tasas por aglomerado")
 
 ## Se divide en la siguientes  partes:
-## 1 porcentajes y mostrar el mapa con puntos verdes/rojos según corresponda
-## 2. Agregar coordenadas y nombres de aglomerados
-## 3. Mostrar mapas
-## 4. Botoneras para seleccionar los mapas
-## ** Hay partes solo comentadas ya que sirven para ver que todo funcione adecuamente pero no se desea mostrarlas en la pagina
 
 ## 1 porcentajes y mostrar el mapa con puntos verdes/rojos según corresponda
 df_comparacion_empleo, df_comparacion_desempleo = fe.evolucion_tasas_aglomerados(df_personas)
@@ -158,29 +153,6 @@ df_comparacion_empleo, df_comparacion_desempleo = fe.agregar_coordenadas_a_tasas
     df_comparacion_empleo,
     df_comparacion_desempleo
 )
-
-# # Mostrar resultados en Streamlit
-# st.subheader("Comparación tasa de EMPLEO con coordandas")
-# st.dataframe(df_comparacion_empleo, use_container_width=True)
-
-# st.subheader("Comparación tasa de DESEMPLEO con coordandas")
-# st.dataframe(df_comparacion_desempleo, use_container_width=True)
-
-
-# ## 3. Mostrar mapas
-# # Mostrar el mapa de empleo
-# st.subheader("Mapa de evolución de la tasa de EMPLEO")
-# mapa_empleo = fe.generar_mapa(df_comparacion_empleo)
-# st_folium(mapa_empleo, width=700, height=400)
-
-# # Mostrar el mapa de desempleo
-# st.subheader("Mapa de evolución de la tasa de DESEMPLEO")
-# mapa_desempleo = fe.generar_mapa(df_comparacion_desempleo, color_positivo='green', color_negativo='red')
-# st_folium(mapa_desempleo, width=700, height=500)
-
-
-## 4. Botoneras para seleccionar los mapas
-## ** No funciona si esta el paso "3. Mostrar mapas" activado
 
 st.subheader("Mapas de evolución de tasas")
 

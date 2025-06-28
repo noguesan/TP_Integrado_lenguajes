@@ -27,29 +27,6 @@ st.title("1.3 (P3) Características demográficas")
 st.subheader("En esta pagina se visualiza los datos demograficos de los archivos")
 
 
-#---------------------------------
-# # Abrir el Archivo
-# st.header("Poblacion para el año y trimestre ingresado")
-# archivo_clean_path = DATA_CLEAN_PATH / "usu_clean_individual.csv"
-# ####### df base de datos
-# df = pd.read_csv(archivo_clean_path, delimiter=",", low_memory=False)
-# df['PP09A_ESP'] = df['PP09A_ESP'].fillna(0)
-# ####### sacarle los 0
-# # Seleccionar trimestres disponibles 
-
-# anios =  sorted(df["ANO4"].astype(str).unique())
-# aglomerados = sorted(df["AGLOMERADO"].unique())
-
-# anio_seleccionado = st.selectbox("Seleccione el año", options=anios)
-# ####### df_anio_select es la base de datos del anio seleccionado
-# df_anio_selec = df[df["ANO4"] == int(anio_seleccionado)].copy()
-
-# trimestres = sorted(df_anio_selec['TRIMESTRE'].astype(str).unique())
-
-# tri_seleccionado = st.selectbox("Seleccione el trimestre a buscar", options=trimestres)
-# ####### df_tri_anio_selec base de datos con anio y trimestre seleccioando
-# df_tri_anio_selec = df_anio_selec[df_anio_selec["TRIMESTRE"] == int(tri_seleccionado)]
-#---------------------------------
 # ACTIV 1.3.1
 
 ## Filtrando para resolver la primera actividad
@@ -99,12 +76,7 @@ st.dataframe(df_aglomerado)
 
 st.header("Evolucion del Cociente de activos e inactivos por aglomerado")
 
-
 #---------------------------------
-# aglo_seleccionado = st.selectbox("Elija un aglomerado",options= aglomerados)
-# ### df["AGLOMERADO"] == aglo_seleccionado) sacarle la parte esa para remplasarla por df_filtrado_aglomerado 
-# df_activos = df[(df["AGLOMERADO"] == aglo_seleccionado) & (df["CH06"].between(15,64,inclusive="both")) ][["ANO4","TRIMESTRE","PONDERA"]].copy()
-# df_inactivos = df[(df["AGLOMERADO"] == aglo_seleccionado) & ( ~df["CH06"].between(15,64,inclusive="both")) ][["ANO4","TRIMESTRE","PONDERA"]].copy()
 df_activos = df_filtrado_aglomerado[ (df_filtrado_aglomerado["CH06"].between(15,64,inclusive="both")) ][["ANO4","TRIMESTRE","PONDERA"]].copy()
 df_inactivos = df_filtrado_aglomerado[( ~df_filtrado_aglomerado["CH06"].between(15,64,inclusive="both")) ][["ANO4","TRIMESTRE","PONDERA"]].copy()
 #---------------------------------
